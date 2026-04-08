@@ -74,11 +74,11 @@
 
 <body class="preload-wrapper popup-loader">
     <!-- preload -->
-    <div class="preload preload-container">
+    {{-- <div class="preload preload-container">
         <div class="preload-logo">
             <div class="spinner"></div>
         </div>
-    </div>
+    </div> --}}
     <!-- /preload -->
     <div id="wrapper">
 
@@ -127,8 +127,8 @@
                                                     <li><a href="{{ route('frontend.addresses') }}"
                                                             class="menu-link-text link text_black-2">Addresses</a></li>
                                                     <li>
-                                                        <form id="logoutForm" action="{{ route('logout') }}"
-                                                            method="POST" style="display: none;">
+                                                        <form id="logoutForm" action="{{ route('logout') }}" method="POST"
+                                                            style="display: none;">
                                                             @csrf
                                                         </form>
                                                         <a href="#" class="menu-link-text link text_black-2"
@@ -176,6 +176,8 @@
                 </div>
             </div>
         </header>
+
+
         <!-- /Header -->
 
         <!-- Content -->
@@ -183,36 +185,79 @@
         <!-- /Content -->
 
         <!-- Footer -->
-        <footer id="footer" class="footer has-all-border has-border-full bg_green-9">
+
+        <footer id="footer" class="footer md-pb-70">
             <div class="footer-wrap">
                 <div class="footer-body">
                     <div class="container">
                         <div class="row">
                             <div class="col-xl-3 col-md-6 col-12">
-                                <div class="footer-col footer-col-1 footer-col-block">
-                                    <div class="footer-heading footer-heading-desktop">
-                                        <h6 class="fw-5">Help</h6>
+                                <div class="footer-infor">
+                                    <div class="footer-logo">
+                                        <a href="/">
+                                            <img src="/frontend/tcul-img/logo.png" alt="" width="160px">
+                                        </a>
                                     </div>
-                                    <div class="footer-heading footer-heading-moblie">
-                                        <h6 class="fw-5">Help</h6>
-                                    </div>
-                                    <ul class="footer-menu-list tf-collapse-content">
+                                    <ul>
                                         <li>
-                                            <a href="/privacy-policy" class="footer-menu_item">Privacy Policy</a>
+                                            <p>Address: 1234 Fashion Street, Suite 567, <br> New York, NY 10001</p>
                                         </li>
                                         <li>
-                                            <a href="/return-and-exchange" class="footer-menu_item">Returns +
-                                                Exchanges</a>
+                                            <p>Email: <a href="#">info@fashionshop.com</a></p>
                                         </li>
                                         <li>
-                                            <a href="/terms-and-conditions" class="footer-menu_item">Terms &amp;
-                                                Conditions</a>
-                                        </li>
-                                        <li>
-                                            <a href="/wishlists" class="footer-menu_item">My Wishlist</a>
+                                            <p>Phone: <a href="#">(212) 555-1234</a></p>
                                         </li>
                                     </ul>
+                                    <a href="#0" class="tf-btn btn-line">Get direction<i
+                                            class="icon icon-arrow1-top-left"></i></a>
+                                    <ul class="tf-social-icon d-flex gap-10">
+                                        <li><a href="#"
+                                                class="box-icon w_34 round social-facebook social-line"><i
+                                                    class="icon fs-14 icon-fb"></i></a></li>
+
+                                        <li><a href="#"
+                                                class="box-icon w_34 round social-instagram social-line"><i
+                                                    class="icon fs-14 icon-instagram"></i></a></li>
+
+                                        <li><a href="#"
+                                                class="box-icon w_34 round social-pinterest social-line"><i
+                                                    class="icon fs-14 icon-pinterest-1"></i></a></li>
+                                    </ul>
                                 </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 col-12 footer-col-block">
+                                <div class="footer-heading footer-heading-desktop">
+                                    <h6>Help</h6>
+                                </div>
+                                <div class="footer-heading footer-heading-moblie">
+                                    <h6>Help</h6>
+                                </div>
+                                <ul class="footer-menu-list tf-collapse-content">
+                                    <li>
+                                        <a href="#0" class="footer-menu_item">Privacy Policy</a>
+                                    </li>
+                                    <li>
+                                        <a href="#0" class="footer-menu_item"> Returns + Exchanges
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#0" class="footer-menu_item">Shipping</a>
+                                    </li>
+                                    <li>
+                                        <a href="#0" class="footer-menu_item">Terms &amp;
+                                            Conditions</a>
+                                    </li>
+                                    <li>
+                                        <a href="#0" class="footer-menu_item">FAQ’s</a>
+                                    </li>
+                                    <li>
+                                        <a href="#0" class="footer-menu_item">Compare</a>
+                                    </li>
+                                    <li>
+                                        <a href="#0" class="footer-menu_item">My Wishlist</a>
+                                    </li>
+                                </ul>
                             </div>
                             <div class="col-xl-3 col-md-6 col-12">
                                 <div class="footer-col footer-col-2 footer-col-block">
@@ -242,55 +287,6 @@
                                         </li>
                                         <li>
                                             <a href="/news" class="footer-menu_item">News</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6 col-12">
-                                <div class="footer-col footer-col-3 footer-col-block">
-                                    <div class="footer-heading footer-heading-desktop">
-                                        <h6 class="fw-5">Contact us</h6>
-                                    </div>
-                                    <div class="footer-heading footer-heading-moblie">
-                                        <h6 class="fw-5">Contact us</h6>
-                                    </div>
-                                    <ul class="footer-menu-list tf-collapse-content">
-                                        <li>
-                                            <a href="tel:+91 7304229346" class="footer-menu_item"><i
-                                                    class="fas fa-phone" style="margin-right: 5px;"></i> +91
-                                                7304229346</a>
-                                        </li>
-                                        <li>
-                                            <a href="mailto:updates@bamboostreet.in" class="footer-menu_item">
-                                                <i class="fas fa-envelope" style="margin-right: 5px;"></i>
-                                                updates@bamboostreet.in
-                                            </a>
-                                        </li>
-                                        {{-- <li>
-                                            <a href="{{ route('frontend.contact') }}" class="footer-menu_item">Contact
-                                                Us</a>
-                                        </li> --}}
-                                        <li>
-                                            <ul class="tf-social-icon d-flex gap-20 style-default style-white">
-                                                <li>
-                                                    <a href="https://www.facebook.com/share/18Um7RsCRv/?mibextid=wwXIfr"
-                                                        target="_blank" class="box-icon round social-facebook">
-                                                        <i class="icon fs-14 icon-fb"></i>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="https://www.instagram.com/bamboostreet.in?igsh=MWE1ZGQzMTFkNWJ4ag=="
-                                                        target="_blank" class="box-icon round social-instagram">
-                                                        <i class="icon fs-14 icon-instagram"></i>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="https://wa.me/7304229346" target="_blank"
-                                                        class="box-icon round social-pinterest">
-                                                        <i class="icon fs-14 icon-whatsapp"></i>
-                                                    </a>
-                                                </li>
-                                            </ul>
                                         </li>
                                     </ul>
                                 </div>
