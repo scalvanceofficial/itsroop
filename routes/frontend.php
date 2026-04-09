@@ -1,5 +1,3 @@
-
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -57,6 +55,7 @@ Route::name('frontend.')->group(function () {
     Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
     Route::get('/return-and-exchange', [HomeController::class, 'returnExchange'])->name('return-and-exchange');
     Route::get('/terms-and-conditions', [HomeController::class, 'termsAndConditions'])->name('terms-and-conditions');
+    Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 
     Route::get('/products/{category_slug?}', [ProductController::class, 'index'])->name('products');
     Route::get('/products/{slug}/details', [ProductController::class, 'productDetails'])->name('products.product-details');

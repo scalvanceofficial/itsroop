@@ -1,12 +1,12 @@
 @extends('layouts.frontend')
 @section('title')
-    Wishlist | Bamboo Street
+    Wishlist | Itsroop
 @endsection
 @section('content')
     <!-- page-title -->
-    <div class="tf-page-title bg_green-1">
+    <div class="tf-page-title">
         <div class="container-full">
-            <div class="heading text-center text_white-2">Your wishlist</div>
+            <div class="heading text-center">My Wishlist</div>
         </div>
     </div>
     <!-- /page-title -->

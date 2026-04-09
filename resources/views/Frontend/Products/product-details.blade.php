@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 @section('title')
-    Products | Bamboo Street
+    Products | Itsroop
 @endsection
 @section('content')
     <style>
@@ -38,6 +38,11 @@
             border-radius: 50%;
         }
     </style>
+    <div class="tf-page-title">
+        <div class="container-full">
+            <div class="heading text-center">Your Products Is Here</div>
+        </div>
+    </div>
     <section class="flat-spacing-4 pt_0  mt-5">
         <div class="tf-main-product">
             <div class="container">

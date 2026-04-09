@@ -1,12 +1,12 @@
 @extends('layouts.frontend')
 @section('title')
-    Profile | Bamboo Street
+    Profile | Itsroop
 @endsection
 @section('content')
     <!-- page-title -->
-    <div class="tf-page-title bg_green-1">
+    <div class="tf-page-title">
         <div class="container-full">
-            <div class="heading text-center text_white-2">Account Details</div>
+            <div class="heading text-center">Profile Details</div>
         </div>
     </div>
     <!-- /page-title -->

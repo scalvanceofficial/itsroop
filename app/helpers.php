@@ -188,10 +188,7 @@ function inRupe($num, $symbol = true, $pdf = false)
     }
 }
 
-function getDomainUrl()
-{
-    return $url = env("APP_URL", "https://ready.technicul.com");
-}
+
 
 // * Send SMS - START * //
 function send_sms($mobile, $otp, $message_id)
@@ -352,5 +349,5 @@ function getYoutubeEmbedUrl($url)
 function is_mobile()
 {
     $agent = new Agent();
-    return  $agent->isMobile();
+    return $agent->isMobile();
 }

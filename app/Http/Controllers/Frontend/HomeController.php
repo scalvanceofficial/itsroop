@@ -64,7 +64,10 @@ class HomeController extends Controller
     {
         return view('Frontend.Pages.contact');
     }
-
+    public function faq()
+    {
+        return view('Frontend.Pages.faq');
+    }
     public function productDetails()
     {
         return view('Frontend.Products.product-details');

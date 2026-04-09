@@ -66,16 +66,16 @@
 
 .nav-sw.nav-next-slider.nav-next-collection {
     color: #ffffff;
-    background-color: #214332;
+    background-color: #000000;
 }
 
 .nav-sw.nav-prev-slider.nav-prev-collection {
     color: #ffffff;
-    background-color: #214332;
+    background-color: #000000;
 }
 
 .selected-category {
-    color: #205b3d !important;
+    color: #000000 !important;
     font-weight: 700 !important;
     text-decoration: underline !important;
 }
@@ -209,7 +209,7 @@
     /* Updated line height */
     text-align: center;
     /* Center the heading */
-    color: #214332;
+    color: #000000;
     /* Deep green text */
 }
 
@@ -270,4 +270,8 @@
 
 .justify-text {
     text-align: justify;
+}
+
+.tf-page-title {
+    margin-top: 80px;
 }

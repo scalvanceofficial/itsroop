@@ -1,15 +1,13 @@
 @extends('layouts.frontend')
 @section('title')
-    Products | Bamboo Street
+    Products | Itsroop
 @endsection
 @section('content')
     <!-- page-title -->
-    <div class="tf-page-title bg_green-1 bg_green-1">
+    <div class="tf-page-title">
         <div class="container-full">
-            <div class="heading text-center text_white-2">Products</div>
-            <p class="text-center text-2  mt_5 text-white">Shop our eco-friendly range and make a difference for the
-                planet.
-            </p>
+            <div class="heading text-center">New Arrival</div>
+            <p class="text-center text-2 text_black-2 mt_5">Shop through our latest selection of Fashion</p>
         </div>
     </div>
     <!-- /page-title -->
