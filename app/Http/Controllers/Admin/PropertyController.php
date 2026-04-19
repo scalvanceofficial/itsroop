@@ -13,21 +13,15 @@ class PropertyController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $max_index =  Property::max('index');
-
+        $max_index = Property::max('index');
         return view('Admin.Properties.index', compact('max_index'));
     }
 
-
     /**
-     * Get a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Data for datatable
      */
     public function data(Request $request)
     {
@@ -36,28 +30,40 @@ class PropertyController extends Controller
 
         return DataTables::eloquent($query)
             ->editColumn('name', function ($property) {
-                return isset($property->name) ? $property->name : '';
+                return $property->name ?? '';
             })
             ->editColumn('property_values', function ($property) {
-                $property_values = isset($property->propertyValues) ? $property->propertyValues->sortBy('index') : null;
+                $property_values = isset($property->propertyValues)
+                    ? $property->propertyValues->sortBy('index')
+                    : null;
 
                 return $property_values ? $property_values->pluck('name')->implode(', ') : '';
             })
             ->editColumn('index', function ($property) {
-                return '<a href="#" class="badge bg-success btn-sm propertyIndexBtn"  data-title="Change Indexing" data-id="' . $property->id . '" data-index="' . $property->index . '" style="padding: 0px 7px 1px !important;">
-                    <span class="badge badge-light" style="font-size:10px; margin:0px -10px 0px -10px !important;">' . $property->index . '</span>
-                </a>';
+                return '<a href="#" class="badge bg-success btn-sm propertyIndexBtn"
+                        data-title="Change Indexing"
+                        data-id="' . $property->id . '"
+                        data-index="' . $property->index . '">
+                        <span class="badge badge-light">' . $property->index . '</span>
+                    </a>';
             })
             ->editColumn('status', function ($property) {
                 if ($property->status == 'ACTIVE') {
-                    return '<div class="form-check form-switch"><input class="form-check-input properties-status-switch" type="checkbox" checked data-routekey="' . $property->route_key . '"/></div>';
+                    return '<div class="form-check form-switch">
+                        <input class="form-check-input properties-status-switch"
+                        type="checkbox" checked data-routekey="' . $property->route_key . '"/>
+                    </div>';
                 } else {
-                    return '<div class="form-check form-switch"><input class="form-check-input properties-status-switch" type="checkbox" data-routekey="' . $property->route_key . '"/></div>';
+                    return '<div class="form-check form-switch">
+                        <input class="form-check-input properties-status-switch"
+                        type="checkbox" data-routekey="' . $property->route_key . '"/>
+                    </div>';
                 }
             })
             ->addColumn('action', function ($property) {
-                $edit  = '<a href="' . route('admin.properties.edit', ['property' => $property->route_key]) . '" class="badge bg-warning fs-1"><i class="fa fa-edit"></i></a>';
-                return $edit;
+                return '<a href="' . route('admin.properties.edit', ['property' => $property->route_key]) . '" class="badge bg-warning fs-1">
+                            <i class="fa fa-edit"></i>
+                        </a>';
             })
             ->filterColumn('index', function ($query, $keyword) {
                 $query->where('index', 'like', "%{$keyword}%")
@@ -70,11 +76,8 @@ class PropertyController extends Controller
             ->make(true);
     }
 
-
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Show create form
      */
     public function create()
     {
@@ -82,14 +85,16 @@ class PropertyController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Store property
      */
     public function store(Request $request)
     {
-        $this->validate($request, $this->rules);
+        $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'label' => 'nullable|string|max:255',
+            'is_color' => 'required|in:YES,NO',
+            'type' => 'required|string', // ✅ NEW FIELD
+        ]);
 
         if (!$request->names) {
             return response()->json([
@@ -111,9 +116,9 @@ class PropertyController extends Controller
             $property_values[] = [
                 'property_id' => $property->id,
                 'name' => $name,
-                'color' => $request->colors[$key] ?? null,
-                'index' => $request->indexes[$key],
-                'status' => $request->statuses[$key] ?? 'INACTIVE',
+                'color' => $request->is_color == 'YES' ? ($request->colors[$key] ?? null) : null, // ✅ FIX
+                'index' => $request->indexes[$key] ?? 0,
+                'status' => isset($request->statuses[$key]) ? 'ACTIVE' : 'INACTIVE',
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
                 'created_at' => now(),
@@ -130,21 +135,7 @@ class PropertyController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Show edit form
      */
     public function edit(Property $property)
     {
@@ -152,15 +143,16 @@ class PropertyController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Update property
      */
     public function update(Request $request, Property $property)
     {
-        $this->validate($request, $this->rules);
+        $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'label' => 'nullable|string|max:255',
+            'is_color' => 'required|in:YES,NO',
+            'type' => 'required|string', // ✅ NEW FIELD
+        ]);
 
         $user = Auth::user();
 
@@ -173,9 +165,9 @@ class PropertyController extends Controller
                     'name' => $name,
                 ],
                 [
-                    'color' => $request->colors[$key] ?? null,
-                    'index' => $request->indexes[$key],
-                    'status' => $request->statuses[$key] ?? 'INACTIVE',
+                    'color' => $request->is_color == 'YES' ? ($request->colors[$key] ?? null) : null,
+                    'index' => $request->indexes[$key] ?? 0,
+                    'status' => isset($request->statuses[$key]) ? 'ACTIVE' : 'INACTIVE',
                     'updated_by' => $user->id,
                     'updated_at' => now(),
                     'created_by' => $user->id,
@@ -191,16 +183,8 @@ class PropertyController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Change status
      */
-    public function destroy($id)
-    {
-        //
-    }
-
     public function changeStatus(Request $request)
     {
         $property = Property::findByKey($request->route_key);
@@ -208,32 +192,43 @@ class PropertyController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => ucfirst(strtolower($property->name)) . ' has been marked ' . ucfirst(strtolower($property->status)) . ' successfully',
+            'message' => ucfirst(strtolower($property->name)) . ' marked ' . ucfirst(strtolower($property->status)),
         ], 200);
     }
 
+    /**
+     * Create dynamic value row
+     */
     public function propertyValueCreate(Request $request)
     {
-        if ($request->is_color) {
-            $is_color = $request->is_color;
-            $random_number = rand(1000, 9999);
-
-            return view('Admin.Properties.values', compact('random_number', 'is_color'));
-        } else {
+        if (!$request->is_color) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Is color field is required.',
             ], 400);
         }
+
+        $random_number = rand(1000, 9999);
+
+        return view('Admin.Properties.values', [
+            'random_number' => $random_number,
+            'is_color' => $request->is_color,
+            'type' => $request->type // 🔥 IMPORTANT
+        ]);
     }
 
+    /**
+     * Update index
+     */
     public function updateIndex(Request $request)
     {
         $property = Property::find($request->property_id);
 
-        $swap_index_property = Property::where('index', $request->index)->first();
+        $swap = Property::where('index', $request->index)->first();
 
-        $swap_index_property->update(['index' => $property->index]);
+        if ($swap) {
+            $swap->update(['index' => $property->index]);
+        }
 
         $property->update(['index' => $request->index]);
 
@@ -243,10 +238,14 @@ class PropertyController extends Controller
         ], 200);
     }
 
+    /**
+     * Validation rules
+     */
     private $rules = [
         'name' => 'required|string|max:255',
         'label' => 'nullable|string|max:255',
         'slug' => 'nullable|string|max:255',
         'is_color' => 'required|in:YES,NO',
+        'type' => 'required|string', // ✅ NEW
     ];
 }

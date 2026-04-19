@@ -18,6 +18,7 @@ class Property extends BaseModel
         'is_color',
         'status',
         'index',
+        'type',
     ];
 
     public function propertyValues()

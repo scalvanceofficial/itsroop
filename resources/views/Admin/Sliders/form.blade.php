@@ -22,14 +22,14 @@
                                     value="{{ isset($slider) ? $slider->title : '' }}" />
                                 <div id="title-error" style="color:red"></div>
                             </div>
-                            <div class="col-sm-12 col-md-6">
+                            {{-- <div class="col-sm-12 col-md-6">
                                 <label class="control-label col-form-label">Subtitle</label>
 
                                 <input type="text" class="form-control" placeholder="Enter Subtitle" name="subtitle"
                                     value="{{ isset($slider) ? $slider->subtitle : '' }}" />
 
                                 <div id="subtitle-error" style="color:red"></div>
-                            </div>
+                            </div> --}}
                             <div class="col-sm-12 {{ Route::is('admin.sliders.create') ? 'col-md-6' : 'col-md-4' }}">
                                 <label class="control-label col-form-label">Desktop Image
                                     <sup class="text-danger">

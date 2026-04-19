@@ -2,238 +2,266 @@
 @section('title')
     Properties Management
 @endsection
+
 @section('content')
     <form method="POST"
         action="{{ Route::is('admin.properties.create') ? route('admin.properties.store') : route('admin.properties.update', ['property' => $property->id]) }}"
         enctype="multipart/form-data" autocomplete="off" id="propertiesForm">
+
         @csrf
         {{ Route::is('admin.properties.create') ? '' : method_field('PUT') }}
+
+        <!-- ================= PROPERTY DETAILS ================= -->
         <div class="row">
             <div class="col-lg-12 d-flex align-items-stretch">
                 <div class="card w-100">
+
                     <div class="card-header">
-                        <h5> {{ Route::is('admin.properties.create') ? 'Create' : 'Edit' }} Property </h5>
+                        <h5>{{ Route::is('admin.properties.create') ? 'Create' : 'Edit' }} Property</h5>
                     </div>
+
                     <div class="card-body border-top">
                         <div class="row mt-4">
-                            <div class="col-sm-12 col-md-4">
-                                <label class="control-label col-form-label">
-                                    Name
-                                    <sup class="text-danger">*</sup>
-                                </label>
-                                <input type="text" class="form-control" placeholder="Enter name" name="name"
-                                    value="{{ isset($property) ? $property->name : '' }}" />
-                                <div id="name-error" style="color:red"></div>
+
+                            <!-- NAME -->
+                            <div class="col-md-4">
+                                <label>Name *</label>
+                                <input type="text" class="form-control" name="name"
+                                    value="{{ $property->name ?? '' }}">
                             </div>
-                            <div class="col-sm-12 col-md-4">
-                                <label class="control-label col-form-label">Label </label>
-                                <input type="text" class="form-control" placeholder="Enter label" name="label"
-                                    value="{{ isset($property) ? $property->label : '' }}" />
-                                <div id="label-error" style="color:red"></div>
+
+                            <!-- LABEL -->
+                            <div class="col-md-4">
+                                <label>Label</label>
+                                <input type="text" class="form-control" name="label"
+                                    value="{{ $property->label ?? '' }}">
                             </div>
-                            <div class="col-sm-12 col-md-4 mb-4">
-                                <label class="control-label col-form-label">Is Colour (Reference With Property
-                                    Name)<sup class="text-danger">*</sup></label>
+
+                            <!-- IS COLOR -->
+                            <div class="col-md-4">
+                                <label>Is Color *</label>
                                 <select class="form-control" name="is_color" id="isColor">
-                                    <option value="" disabled selected>Select</option>
                                     <option value="YES"
-                                        {{ isset($property) && $property->is_color == 'YES' ? 'selected' : '' }}>Yes
+                                        {{ isset($property) && $property->is_color == 'YES' ? 'selected' : '' }}>
+                                        Yes
                                     </option>
                                     <option value="NO"
-                                        {{ isset($property) && $property->is_color == 'NO' ? 'selected' : '' }}>No
+                                        {{ isset($property) && $property->is_color == 'NO' ? 'selected' : '' }}>
+                                        No
                                     </option>
                                 </select>
-                                <div id="is_color-error" style="color:red"></div>
                             </div>
+
+                            <!-- PROPERTY TYPE -->
+                            <div class="col-md-4 mt-3">
+                                <label>Property Type *</label>
+                                <select class="form-control" id="propertyType" name="type">
+                                    <option value="general">General</option>
+                                    <option value="shirt_size">Shirt Size</option>
+                                    <option value="shoe_size">Shoe Size</option>
+                                    <option value="color">Color</option>
+                                </select>
+                            </div>
+
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
-        <div class="row">
+
+        <!-- ================= PROPERTY VALUES ================= -->
+        <div class="row mt-3">
             <div class="col-lg-12 d-flex align-items-stretch">
                 <div class="card w-100">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-9 d-flex justify-content-start">
-                                <h5> {{ Route::is('admin.properties.create') ? 'Create' : 'Edit' }} Property Values</h5>
-                            </div>
-                            <div class="col-3 d-flex justify-content-end">
-                                <a id="addValueBtn" style="margin-top:-1.5%;" class="btn btn-md btn-primary pull-right">
-                                    Add Values <i class="fa fa-plus"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body border-top" id="createValuesBody">
-                        @if (isset($property))
-                            @foreach ($property->propertyValues as $property_value)
-                                <div class="row valueRow">
-                                    <div class="col-md-12">
-                                        <div id="whole-div-{{ $property_value->id }}"
-                                            class="whole-div-{{ $property_value->id }}"
-                                            data-value-id="{{ $property_value->id }}"
-                                            style="border: 2px solid #5d87ff; padding: 13px 25px; margin-top: 13px; margin-bottom: 13px; border-radius: 10px;">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <input type="text" name="names[{{ $property_value->id }}]"
-                                                        value="{{ $property_value->name }}" class="form-control"
-                                                        placeholder="Value" required />
-                                                </div>
 
-                                                @if ($property->is_color == 'YES' && $property_value->color)
-                                                    <div class="col-md-3 color-input-field"
-                                                        id="color-input-field-{{ $property_value->id }}">
-                                                        <div class="form-group">
-                                                            <input type="color" class="form-control form-control-color"
-                                                                name="colors[{{ $property_value->id }}]"
-                                                                value="{{ $property_value->color }}"
-                                                                title="Choose your color" />
-                                                        </div>
-                                                    </div>
-                                                @else
-                                                    <div class="col-md-3"></div>
-                                                @endif
-
-
-                                                <div class="col-md-2">
-                                                    <div class="form-check form-switch mt-2">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="status_{{ $property_value->id }}"
-                                                            name="statuses[{{ $property_value->id }}]" value="ACTIVE"
-                                                            {{ $property_value->status === 'ACTIVE' ? 'checked' : '' }}>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-2 d-flex justify-content-end">
-                                                    <input type="number" id="value_index_{{ $property_value->id }}"
-                                                        name="indexes[{{ $property_value->id }}]"
-                                                        value="{{ $property_value->index }}" class="form-control index"
-                                                        placeholder="Index" required />
-                                                </div>
-
-                                                <div class="col-md-1 d-flex justify-content-end" style="padding:5px;">
-                                                    <button type="button"
-                                                        class="btn btn-danger btn-sm float-right removeValueBtn">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        @endif
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-primary" id="submit-btn">
-                            <span class="spinner-span" role="status" aria-hidden="true"></span>
-                            <span class="save-btn-text">Save</span>
-                            &nbsp;
-                            <i class="ti ti-device-floppy"></i>
+                    <div class="card-header d-flex justify-content-between">
+                        <h5>Property Values</h5>
+                        <button type="button" class="btn btn-primary" id="addValueBtn">
+                            Add Value <i class="fa fa-plus"></i>
                         </button>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="{{ route('admin.properties.index') }}" type="button" class="btn btn-danger">
+                    </div>
+
+                    <div class="card-body border-top" id="createValuesBody">
+                        <!-- dynamic values -->
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            Save <i class="ti ti-device-floppy"></i>
+                        </button>
+
+                        <a href="{{ route('admin.properties.index') }}" class="btn btn-danger">
                             Cancel
-                            <i class="ti ti-arrow-back-up-double"></i>
                         </a>
                     </div>
+
                 </div>
             </div>
         </div>
-    </form>
-    <script>
-        $(document).ready(function(e) {
 
-            $('#addValueBtn').click(function(e) {
+    </form>
+
+    <!-- ================= SCRIPT ================= -->
+
+    <script>
+        $(document).ready(function() {
+
+            // ADD VALUE
+            $('#addValueBtn').click(function() {
                 createValue();
             });
 
+            // REMOVE ROW
+            $(document).on('click', '.removeValueBtn', function() {
+                $(this).closest('.valueRow').remove();
+            });
+
+            // ================= AJAX SUBMIT =================
             $('#propertiesForm').submit(function(e) {
                 e.preventDefault();
-                $('#submit-btn').attr('disabled', true)
-                $('.spinner-span').addClass('spinner-border spinner-border-sm')
 
-                $('div[id$="-error"]').empty();
+                let form = $(this);
+                let url = form.attr('action');
+                let btn = $('#submitBtn');
 
-                var form = $(this);
-                var url = form.attr('action');
+                btn.prop('disabled', true);
 
                 $.ajax({
                     type: "POST",
                     url: url,
                     data: new FormData(this),
                     contentType: false,
-                    cache: false,
                     processData: false,
-                    success: function(data) {
-                        if (data.status == 'success') {
-                            toastr.success(data.message, '', {
-                                showMethod: "slideDown",
-                                hideMethod: "slideUp",
-                                timeOut: 1500,
-                                closeButton: true,
-                            });
+
+                    success: function(res) {
+                        btn.prop('disabled', false);
+
+                        if (res.status === 'success') {
+                            toastr.success(res.message);
 
                             setTimeout(function() {
-                                window.location.href = "{!! route('admin.properties.index') !!}";
-                            }, 100);
-
+                                window.location.href =
+                                    "{{ route('admin.properties.index') }}";
+                            }, 500);
                         } else {
-                            $('#submit-btn').attr('disabled', false);
-                            $('.spinner-span').removeClass('spinner-border spinner-border-sm')
-                            toastr.error('There is some error!!', '', {
-                                showMethod: "slideDown",
-                                hideMethod: "slideUp",
-                                timeOut: 1500,
-                                closeButton: true,
-                            });
+                            toastr.error('Something went wrong');
                         }
                     },
-                    error: function(xhr, ajaxOptions, thrownError) {
-                        $('#submit-btn').attr('disabled', false);
-                        $('.spinner-span').removeClass('spinner-border spinner-border-sm')
-                        toastr.error(xhr.responseJSON.message,
-                            '', {
-                                showMethod: "slideDown",
-                                hideMethod: "slideUp",
-                                timeOut: 1500,
-                                closeButton: true,
+
+                    error: function(xhr) {
+                        btn.prop('disabled', false);
+
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            $.each(xhr.responseJSON.errors, function(key, val) {
+                                toastr.error(val[0]);
                             });
-
-                        $.each(xhr.responseJSON.errors, function(key, value) {
-                            $('#' + key + '-error').html(value);
-                        });
-
-                        $('html, body').animate({
-                            scrollTop: $('#' + Object.keys(xhr.responseJSON.errors)[0] +
-                                    '-error')
-                                .offset().top - 200
-                        }, 500);
+                        } else {
+                            toastr.error('Server Error');
+                        }
                     }
                 });
             });
+
         });
 
-        $(document).on('click', '.removeValueBtn', function() {
-            $(this).closest('.valueRow').remove();
-        });
 
+        // ================= CREATE VALUE =================
         function createValue() {
-            $.ajax({
-                type: "POST",
-                url: '/admin/properties/values/create',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    is_color: $('#isColor').val()
-                },
-                success: function(data) {
-                    $('#createValuesBody').prepend(data);
-                },
-                error: function(xhr, ajaxOptions, thrownError) {
-                    toastr.error(xhr.responseJSON.message, '');
-                }
-            });
-        };
+
+            let type = $('#propertyType').val();
+            let is_color = $('#isColor').val();
+            let id = Math.floor(Math.random() * 100000);
+
+            let valueField = '';
+
+            // SHIRT SIZE
+            if (type === 'shirt_size') {
+                valueField = `
+            <select name="names[${id}]" class="form-control" required>
+                <option value="">Select Size</option>
+                <option>S</option>
+                <option>M</option>
+                <option>L</option>
+                <option>XL</option>
+                <option>XXL</option>
+            </select>
+        `;
+            }
+
+            // SHOE SIZE
+            else if (type === 'shoe_size') {
+                valueField = `
+            <select name="names[${id}]" class="form-control" required>
+                <option value="">Select Size</option>
+                ${[5,6,7,8,9,10,11,12].map(s => `<option>${s}</option>`).join('')}
+            </select>
+        `;
+            }
+
+            // COLOR
+            else if (type === 'color') {
+                valueField = `
+            <input type="text" name="names[${id}]" class="form-control" placeholder="Color Name" required>
+        `;
+            }
+
+            // GENERAL
+            else {
+                valueField = `
+            <input type="text" name="names[${id}]" class="form-control" placeholder="Enter Value" required>
+        `;
+            }
+
+            let colorField = '';
+
+            if (is_color === 'YES') {
+                colorField = `
+            <div class="col-md-3">
+                <input type="color" name="colors[${id}]" class="form-control form-control-color">
+            </div>
+        `;
+            } else {
+                colorField = `<div class="col-md-3"></div>`;
+            }
+
+            let html = `
+        <div class="row valueRow mt-2">
+            <div class="col-md-12">
+                <div style="border:2px solid #5d87ff; padding:10px; border-radius:10px;">
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            ${valueField}
+                        </div>
+
+                        ${colorField}
+
+                        <div class="col-md-2">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox"
+                                    name="statuses[${id}]" value="ACTIVE" checked>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <input type="number" name="indexes[${id}]"
+                                class="form-control" placeholder="Index" required>
+                        </div>
+
+                        <div class="col-md-1 d-flex justify-content-end">
+                            <button type="button" class="btn btn-danger removeValueBtn">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+            $('#createValuesBody').prepend(html);
+        }
     </script>
 @endsection
