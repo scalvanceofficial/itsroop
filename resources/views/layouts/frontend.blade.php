@@ -804,7 +804,6 @@
                                                     <form method="POST" action="/subscribe-enquiry"
                                                         id="subscribeForm" enctype="multipart/form-data">
                                                         @csrf
-                                                        @csrf
                                                         <div class="sib-input sib-form-block">
                                                             <div class="form__entry entry_block">
                                                                 <div class="form__label-row ">
@@ -814,7 +813,7 @@
                                                                         <input class="input radius-60" type="text"
                                                                             id="email" class="form-control"
                                                                             name="email" autocomplete="off"
-                                                                            placeholder="Enter your email...."
+                                                                            placeholder="Enter your Product Here...."
                                                                             data-required="true" />
                                                                         <div class="field_error" id="email-error"
                                                                             style="color:#ff0000"></div>
@@ -840,7 +839,8 @@
                                                         <div class="sib-form-block button-submit">
                                                             <button type="submit" id="started"
                                                                 class="sib-form-block__button sib-form-block__button-with-loader tf-btn btn-sm radius-60 btn-fill btn-icon animate-hover-btn">
-                                                                Subscribe <i class="icon icon-arrow1-top-left"></i>
+                                                                Request Your Product <i
+                                                                    class="icon icon-arrow1-top-left"></i>
                                                             </button>
                                                             <div id="form_loader" style="display:none;">Loading...
                                                             </div>
