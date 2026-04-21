@@ -19,6 +19,7 @@ class Property extends BaseModel
         'status',
         'index',
         'type',
+        'sex',
     ];
 
     public function propertyValues()

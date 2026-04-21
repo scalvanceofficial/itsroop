@@ -63,6 +63,21 @@
                                 </select>
                             </div>
 
+                            <div class="col-md-4 mt-3">
+                                <label>Sex</label>
+                                <select class="form-control" name="sex">
+                                    <option value="">Select</option>
+                                    <option value="Male"
+                                        {{ isset($property) && $property->sex == 'Male' ? 'selected' : '' }}>Male</option>
+                                    <option value="Female"
+                                        {{ isset($property) && $property->sex == 'Female' ? 'selected' : '' }}>Female
+                                    </option>
+                                    <option value="Unisex"
+                                        {{ isset($property) && $property->sex == 'Unisex' ? 'selected' : '' }}>Unisex
+                                    </option>
+                                </select>
+                            </div>
+
                         </div>
                     </div>
 

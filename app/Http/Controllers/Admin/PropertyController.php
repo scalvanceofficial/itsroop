@@ -32,6 +32,7 @@ class PropertyController extends Controller
             ->editColumn('name', function ($property) {
                 return $property->name ?? '';
             })
+
             ->editColumn('property_values', function ($property) {
                 $property_values = isset($property->propertyValues)
                     ? $property->propertyValues->sortBy('index')
@@ -39,6 +40,12 @@ class PropertyController extends Controller
 
                 return $property_values ? $property_values->pluck('name')->implode(', ') : '';
             })
+
+            // ✅ SHOW SEX (NEW)
+            ->editColumn('sex', function ($property) {
+                return $property->sex ?? '-';
+            })
+
             ->editColumn('index', function ($property) {
                 return '<a href="#" class="badge bg-success btn-sm propertyIndexBtn"
                         data-title="Change Indexing"
@@ -47,6 +54,7 @@ class PropertyController extends Controller
                         <span class="badge badge-light">' . $property->index . '</span>
                     </a>';
             })
+
             ->editColumn('status', function ($property) {
                 if ($property->status == 'ACTIVE') {
                     return '<div class="form-check form-switch">
@@ -60,16 +68,20 @@ class PropertyController extends Controller
                     </div>';
                 }
             })
+
             ->addColumn('action', function ($property) {
                 return '<a href="' . route('admin.properties.edit', ['property' => $property->route_key]) . '" class="badge bg-warning fs-1">
                             <i class="fa fa-edit"></i>
                         </a>';
             })
+
             ->filterColumn('index', function ($query, $keyword) {
                 $query->where('index', 'like', "%{$keyword}%")
                     ->orWhere('name', 'like', "%{$keyword}%")
-                    ->orWhere('status', 'like', "%{$keyword}%");
+                    ->orWhere('status', 'like', "%{$keyword}%")
+                    ->orWhere('sex', 'like', "%{$keyword}%"); // ✅ FILTER SEX
             })
+
             ->addIndexColumn()
             ->rawColumns(['name', 'property_values', 'index', 'status', 'action'])
             ->setRowId('id')
@@ -93,7 +105,8 @@ class PropertyController extends Controller
             'name' => 'required|string|max:255',
             'label' => 'nullable|string|max:255',
             'is_color' => 'required|in:YES,NO',
-            'type' => 'required|string', // ✅ NEW FIELD
+            'type' => 'required|string',
+            'sex' => 'nullable|in:Male,Female,Unisex', // ✅ NEW
         ]);
 
         if (!$request->names) {
@@ -116,7 +129,7 @@ class PropertyController extends Controller
             $property_values[] = [
                 'property_id' => $property->id,
                 'name' => $name,
-                'color' => $request->is_color == 'YES' ? ($request->colors[$key] ?? null) : null, // ✅ FIX
+                'color' => $request->is_color == 'YES' ? ($request->colors[$key] ?? null) : null,
                 'index' => $request->indexes[$key] ?? 0,
                 'status' => isset($request->statuses[$key]) ? 'ACTIVE' : 'INACTIVE',
                 'created_by' => $user->id,
@@ -151,7 +164,8 @@ class PropertyController extends Controller
             'name' => 'required|string|max:255',
             'label' => 'nullable|string|max:255',
             'is_color' => 'required|in:YES,NO',
-            'type' => 'required|string', // ✅ NEW FIELD
+            'type' => 'required|string',
+            'sex' => 'nullable|in:Male,Female,Unisex', // ✅ NEW
         ]);
 
         $user = Auth::user();
@@ -213,7 +227,7 @@ class PropertyController extends Controller
         return view('Admin.Properties.values', [
             'random_number' => $random_number,
             'is_color' => $request->is_color,
-            'type' => $request->type // 🔥 IMPORTANT
+            'type' => $request->type
         ]);
     }
 
@@ -246,6 +260,7 @@ class PropertyController extends Controller
         'label' => 'nullable|string|max:255',
         'slug' => 'nullable|string|max:255',
         'is_color' => 'required|in:YES,NO',
-        'type' => 'required|string', // ✅ NEW
+        'type' => 'required|string',
+        'sex' => 'nullable|in:Male,Female,Unisex', // ✅ NEW
     ];
 }

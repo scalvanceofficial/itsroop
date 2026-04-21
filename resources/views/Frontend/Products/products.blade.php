@@ -260,6 +260,37 @@
                 </form>
                 <hr>
                 <div class="widget-facet">
+                    <div class="facet-title" data-bs-target="#sex-filter" data-bs-toggle="collapse" aria-expanded="true"
+                        aria-controls="sex-filter">
+                        <span>Sex</span>
+                        <span class="icon icon-arrow-up"></span>
+                    </div>
+
+                    <div id="sex-filter" class="collapse show">
+                        <ul class="tf-filter-group current-scrollbar">
+
+                            <li class="list-item d-flex gap-12 align-items-center">
+                                <input type="radio" name="sex" class="tf-check sex-filter" value="Male"
+                                    id="sex_male">
+                                <label for="sex_male" class="label"><span>Male</span></label>
+                            </li>
+
+                            <li class="list-item d-flex gap-12 align-items-center">
+                                <input type="radio" name="sex" class="tf-check sex-filter" value="Female"
+                                    id="sex_female">
+                                <label for="sex_female" class="label"><span>Female</span></label>
+                            </li>
+
+                            <li class="list-item d-flex gap-12 align-items-center">
+                                <input type="radio" name="sex" class="tf-check sex-filter" value="Unisex"
+                                    id="sex_unisex">
+                                <label for="sex_unisex" class="label"><span>Unisex</span></label>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="widget-facet">
                     <div class="facet-title" data-bs-target="#price-sort" data-bs-toggle="collapse" aria-expanded="true"
                         aria-controls="price-sort">
                         <span>Sort by Price</span>
@@ -329,10 +360,17 @@
         </div>
     </div>
     <script>
-        $(document).ready(function(e) {
-            // Handle property filter change
-            $('.property-value').change(function() {
+        $(document).ready(function() {
+
+            // COMMON FILTER FUNCTION
+            function applyFilters() {
+
                 let propertyValues = getSelectedPropertyValueIds();
+                let priceSort = $('.price-sort:checked').val();
+                let ratingSort = $('.rating-sort:checked').val();
+                let stockSort = $('.stock-sort:checked').val();
+                let sex = $('.sex-filter:checked').val();
+
                 const categorySlug = window.location.pathname.split('/products/')[1];
                 const decodedCategory = decodeURIComponent(categorySlug);
 
@@ -341,8 +379,12 @@
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',
+                        category_slug: decodedCategory,
                         property_values: propertyValues,
-                        category_slug: decodedCategory
+                        price_sort: priceSort,
+                        rating_sort: ratingSort,
+                        stock_sort: stockSort,
+                        sex: sex // ✅ NEW
                     },
                     success: function(response) {
                         $('#products-container').html(response);
@@ -351,87 +393,44 @@
                         console.log(error);
                     }
                 });
+            }
+
+            // PROPERTY FILTER
+            $(document).on('change', '.property-value', function() {
+                applyFilters();
             });
+
+            // PRICE
+            $(document).on('change', '.price-sort', function() {
+                applyFilters();
+            });
+
+            // RATING
+            $(document).on('change', '.rating-sort', function() {
+                applyFilters();
+            });
+
+            // STOCK
+            $(document).on('change', '.stock-sort', function() {
+                applyFilters();
+            });
+
+            // SEX ✅ NEW
+            $(document).on('change', '.sex-filter', function() {
+                applyFilters();
+            });
+
         });
 
-        // Function to fetch all selected property values
+        // GET SELECTED PROPERTY VALUES
         function getSelectedPropertyValueIds() {
             let propertyValues = [];
+
             $('.property-value:checked').each(function() {
                 propertyValues.push($(this).val());
             });
 
             return propertyValues;
         }
-
-        $('.rating-sort').change(function() {
-            let ratingSort = $(this).val(); // Either 'low_to_high' or 'high_to_low'
-            const categorySlug = window.location.pathname.split('/products/')[1];
-            const decodedCategory = decodeURIComponent(categorySlug);
-
-            $.ajax({
-                url: "{{ route('frontend.products.filters') }}",
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    rating_sort: ratingSort,
-                    category_slug: decodedCategory
-                },
-                success: function(response) {
-                    $('#products-container').html(response);
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
-        });
-
-
-        $('.price-sort').change(function() {
-            let priceSort = $(this).val(); // Either 'low_to_high' or 'high_to_low'
-            const categorySlug = window.location.pathname.split('/products/')[1];
-            const decodedCategory = decodeURIComponent(categorySlug);
-
-            $.ajax({
-                url: "{{ route('frontend.products.filters') }}",
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    price_sort: priceSort,
-                    category_slug: decodedCategory
-                },
-                success: function(response) {
-                    $('#products-container').html(response);
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
-        });
-
-
-        $('.stock-sort').change(function() {
-            let stockSort = $(this).val(); // 'available' or 'out_of_stock'
-            let propertyValues = getSelectedPropertyValueIds();
-            const categorySlug = window.location.pathname.split('/products/')[1];
-            const decodedCategory = decodeURIComponent(categorySlug);
-
-            $.ajax({
-                url: "{{ route('frontend.products.filters') }}",
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    category_slug: decodedCategory,
-                    stock_sort: stockSort,
-                    property_values: propertyValues // Keep this to preserve any selected filters
-                },
-                success: function(response) {
-                    $('#products-container').html(response);
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
-        });
     </script>
 @endsection

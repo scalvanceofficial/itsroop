@@ -145,10 +145,13 @@ class ProductController extends Controller
     public function getFilteredProducts(Request $request)
     {
         $productsQuery = Product::where('status', 'ACTIVE');
+
+        // ✅ CATEGORY
         $category = Category::where('slug', $request->category_slug)->first();
 
         if ($category) {
             $productsQuery->whereJsonContains('category_ids', (string) $category->id);
+
             $subCategories = SubCategory::where('category_id', $category->id)
                 ->where('status', 'ACTIVE')
                 ->get();
@@ -156,9 +159,15 @@ class ProductController extends Controller
             $subCategories = SubCategory::where('status', 'ACTIVE')->get();
         }
 
+        // ✅ SEX FILTER (ADD THIS)
+        if ($request->sex) {
+            $productsQuery->where('sex', $request->sex);
+        }
+
+        // ✅ PROPERTY VALUES FILTER
         $property_values = $request->property_values ?? [];
 
-        if ($property_values) {
+        if (!empty($property_values)) {
             $productsQuery->whereIn('id', function ($query) use ($property_values) {
                 $query->select('product_id')
                     ->from('product_property_values')
@@ -168,10 +177,10 @@ class ProductController extends Controller
             });
         }
 
-        // $products = $productsQuery->get();
+        // ✅ FETCH PRODUCTS
         $products = $productsQuery->with('productPrices')->get();
 
-        // ✅ Stock sorting
+        // ✅ STOCK FILTER
         if ($request->stock_sort) {
             if ($request->stock_sort === 'available') {
                 $products = $products->filter(fn($product) => !$product->isOutOfStock());
@@ -180,26 +189,24 @@ class ProductController extends Controller
             }
         }
 
-        $ratingSort = $request->rating_sort;
-
-        if ($ratingSort) {
+        // ✅ RATING SORT
+        if ($request->rating_sort) {
             $products = $products->sortBy(function ($product) {
                 return $product->average_rating ?? 0;
             });
 
-            if ($ratingSort == 'high_to_low') {
+            if ($request->rating_sort == 'high_to_low') {
                 $products = $products->reverse();
             }
         }
 
-        $priceSort = $request->price_sort;
-
-        if ($priceSort) {
+        // ✅ PRICE SORT
+        if ($request->price_sort) {
             $products = $products->sortBy(function ($product) {
                 return $product->getPrice()->selling_price ?? 0;
             });
 
-            if ($priceSort === 'high_to_low') {
+            if ($request->price_sort === 'high_to_low') {
                 $products = $products->reverse();
             }
         }
@@ -207,9 +214,8 @@ class ProductController extends Controller
         return view('Frontend.Products.filtered-products', compact(
             'products',
             'property_values',
-            'ratingSort',
-            'priceSort',
-            'subCategories'
+            'subCategories',
+            'request' // optional if you want to keep selected filters
         ));
     }
 
