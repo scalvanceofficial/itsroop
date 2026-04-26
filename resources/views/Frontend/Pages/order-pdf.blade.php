@@ -175,8 +175,8 @@
                         <td>{{ $product->product->name }}</td>
                         <td>8471</td>
                         <td class="align-center">{{ $product->quantity }}</td>
-                        <td class="align-right">{{ toIndianCurrency($product->price, 'pdf') }}</td>
-                        <td class="align-right">{{ toIndianCurrency($product->price, 'pdf') }}</td>
+                        <td class="align-right">{{ toCurrency($product->price, 'pdf') }}</td>
+                        <td class="align-right">{{ toCurrency($product->price, 'pdf') }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -185,7 +185,7 @@
         <table class="summary-table">
             <tr>
                 <th colspan="5" class="align-right">Total</th>
-                <th class="align-right">{{ toIndianCurrency($order->products->sum('price'), 'pdf') }}</th>
+                <th class="align-right">{{ toCurrency($order->products->sum('price'), 'pdf') }}</th>
             </tr>
         </table>
 

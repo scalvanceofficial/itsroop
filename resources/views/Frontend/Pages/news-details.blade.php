@@ -1,7 +1,7 @@
 @extends('layouts.frontend')
 
 @section('title')
-    {{ $news->title }} | Bamboo Street
+    {{ $news->title }} | Itsroop
 @endsection
 
 @section('content')

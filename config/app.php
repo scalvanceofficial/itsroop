@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://bamboostreet.in'),
+    'url' => env('APP_URL', 'http://itsroop.co.uk/'),
 
     'asset_url' => env('ASSET_URL'),
 
@@ -152,7 +152,7 @@ return [
     | when sending notifications or alerts to the admin user.
     |
     */
-    'admin_email' => env('ADMIN_EMAIL', 'updates@bamboostreet.in'),
+    'admin_email' => env('ADMIN_EMAIL', 'info@itsroop.com'),
 
     /*
     |--------------------------------------------------------------------------

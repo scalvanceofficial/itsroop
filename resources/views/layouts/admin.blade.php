@@ -82,10 +82,10 @@
                         </li>
                     </ul>
 
-                    <div class="d-block d-lg-none">
+                    <!-- <div class="d-block d-lg-none">
                         <img src="/logo.svg" width="180" alt=""
                             style="filter: invert(34%) sepia(66%) saturate(5876%) hue-rotate(208deg) brightness(95%) contrast(103%);" />
-                    </div>
+                    </div> -->
                     <button class="navbar-toggler p-0 border-0" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
                         aria-label="Toggle navigation">

@@ -90,10 +90,27 @@ class DashboardController extends Controller
         $total_other_order_amount = (clone $baseQuery)->whereNotIn('shiprocket_status', $excluded_statuses)->sum('total_amount');
 
 
+        // Currency-wise totals
+        $currency_distribution = (clone $baseQuery)
+            ->selectRaw('currency_code, COUNT(*) as count, SUM(total_amount) as total')
+            ->groupBy('currency_code')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'code' => $item->currency_code,
+                    'count' => $item->count,
+                    'total' => toCurrency($item->total, $item->currency_code)
+                ];
+            });
+
+        $most_used_currency = $currency_distribution->sortByDesc('count')->first()['code'] ?? 'N/A';
+
         // Prepare response
         $data = [
             'total_orders' => formatNumber($total_orders),
-            'total_amount' => toIndianCurrency($total_amount),
+            'total_amount' => toCurrency($total_amount, 'GBP'),
+            'most_used_currency' => $most_used_currency,
+            'currency_distribution' => $currency_distribution,
 
             'total_new_orders' => formatNumber($total_new_orders),
             'total_shipped_orders' => formatNumber($total_shipped_orders),
@@ -101,11 +118,11 @@ class DashboardController extends Controller
             'total_cancelled_orders' => formatNumber($total_cancelled_orders),
             'total_other_orders' => formatNumber($total_other_orders),
 
-            'total_new_order_amount' => toIndianCurrency($total_new_order_amount),
-            'total_shipped_order_amount' => toIndianCurrency($total_shipped_order_amount),
-            'total_delivered_order_amount' => toIndianCurrency($total_delivered_order_amount),
-            'total_cancelled_order_amount' => toIndianCurrency($total_cancelled_order_amount),
-            'total_other_order_amount' => toIndianCurrency($total_other_order_amount),
+            'total_new_order_amount' => toCurrency($total_new_order_amount, 'GBP'),
+            'total_shipped_order_amount' => toCurrency($total_shipped_order_amount, 'GBP'),
+            'total_delivered_order_amount' => toCurrency($total_delivered_order_amount, 'GBP'),
+            'total_cancelled_order_amount' => toCurrency($total_cancelled_order_amount, 'GBP'),
+            'total_other_order_amount' => toCurrency($total_other_order_amount, 'GBP'),
         ];
 
         return response()->json(['status' => 'success', 'data' => $data], 200);
@@ -191,7 +208,7 @@ class DashboardController extends Controller
         foreach ($months as $month_number => $month) {
             $order = $orders->where('month', $month_number)->first();
             $monthly_total_orders[] = $order ? formatNumber($order->total_orders) : 0;
-            $monthly_total_amounts[] = $order ? toIndianCurrency($order->total_amount) : 0;
+            $monthly_total_amounts[] = $order ? toCurrency($order->total_amount, 'GBP') : toCurrency(0, 'GBP');
         }
 
         $data = [

@@ -54,14 +54,7 @@ class SliderController extends Controller
                         style="width:100px;height:100px;border-radius:8px;">';
             })
 
-            ->editColumn('mobile_image', function ($slider) {
-
-                if (!$slider->mobile_image)
-                    return '';
-
-                return '<img src="' . Storage::url($slider->mobile_image) . '"
-                        style="width:100px;height:100px;border-radius:8px;">';
-            })
+            
 
             ->editColumn('status', function ($slider) {
 
@@ -93,7 +86,6 @@ class SliderController extends Controller
                 'index',
                 'subtitle',
                 'image',
-                'mobile_image',
                 'status',
                 'action'
             ])
@@ -123,10 +115,6 @@ class SliderController extends Controller
                 ->put('sliders', $request->image);
         }
 
-        if ($request->hasFile('mobile_image')) {
-            $data['mobile_image'] = Storage::disk('public')
-                ->put('sliders', $request->mobile_image);
-        }
 
         Slider::create($data);
 
@@ -149,7 +137,6 @@ class SliderController extends Controller
 
         $rules = [
             'image' => 'nullable|image',
-            'mobile_image' => 'nullable|image',
             'subtitle' => 'nullable|string'
         ];
 
@@ -167,15 +154,6 @@ class SliderController extends Controller
                 ->put('sliders', $request->image);
         }
 
-        if ($request->hasFile('mobile_image')) {
-
-            if ($slider->mobile_image) {
-                Storage::disk('public')->delete($slider->mobile_image);
-            }
-
-            $data['mobile_image'] = Storage::disk('public')
-                ->put('sliders', $request->mobile_image);
-        }
 
         $slider->update($data);
 
@@ -227,7 +205,6 @@ class SliderController extends Controller
 
     private $rules = [
         'image' => 'required|image',
-        'mobile_image' => 'nullable|image',
         'subtitle' => 'nullable|string'
     ];
 }

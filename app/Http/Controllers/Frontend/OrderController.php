@@ -6,7 +6,8 @@ namespace App\Http\Controllers\Frontend;
 use Exception;
 use App\Models\Cart;
 use App\Models\Order;
-use Razorpay\Api\Api;
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
 use App\Models\Address;
 use App\Models\OrderProduct;
 use App\Models\ProductPrice;
@@ -36,126 +37,179 @@ class OrderController extends Controller
 
     public function initiatePayment(Request $request)
     {
+        \Log::info('Stripe Initiate Payment Request', ['data' => $request->all()]);
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:1',
-            'accept_terms' => 'required|boolean',
+            'amount'         => 'required|numeric|min:1',
+            'accept_terms'   => 'required|boolean',
+            'address_id'     => 'required|exists:addresses,id',
+            'coupon_code_id' => 'nullable|exists:coupon_codes,id'
         ]);
 
-        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $user = Auth::user();
+        $currencyCode = session('currency', 'GBP');
+        $currencyModel = \App\Models\Currency::where('code', $currencyCode)->where('is_active', true)->first() ?: \App\Models\Currency::where('code', 'GBP')->first();
+        $rate = $currencyModel->exchange_rate ?? 1.0;
+        $currency = $currencyModel->code ?? 'GBP';
 
-        $order = $api->order->create([
-            'amount' => $validated['amount'] * 100,
-            'currency' => 'INR',
-            'payment_capture' => 1
-        ]);
+        try {
+            $stripeSecret = config('services.stripe.secret');
+            \Log::info('Stripe Secret present: ' . ($stripeSecret ? 'YES' : 'NO'));
+            Stripe::setApiKey($stripeSecret);
 
-        return response()->json([
-            'status' => 'success',
-            'order_id' => $order->id,
-            'amount' => $validated['amount'],
-            'currency' => 'INR',
-            'key' => env('RAZORPAY_KEY')
-        ]);
+            $line_items = [];
+            foreach ($user->carts as $cart) {
+                $cart_data = getCartData($cart);
+                // Price is in GBP, convert and multiply by 100 for subunits
+                $unit_amount = round($cart_data['price'] * $rate * 100);
+
+                $line_items[] = [
+                    'price_data' => [
+                        'currency'     => strtolower($currency),
+                        'product_data' => [
+                            'name' => $cart->product->name . ' (' . $cart_data['property_values'] . ')',
+                        ],
+                        'unit_amount' => $unit_amount,
+                    ],
+                    'quantity' => $cart->quantity,
+                ];
+            }
+
+            $session = Session::create([
+                'payment_method_types' => ['card'],
+                'line_items'           => $line_items,
+                'mode'                 => 'payment',
+                'success_url'          => route('frontend.orders.stripe-success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url'           => route('frontend.orders.stripe-cancel'),
+                'metadata' => [
+                    'user_id'        => $user->id,
+                    'address_id'     => $validated['address_id'],
+                    'coupon_code_id' => $validated['coupon_code_id'],
+                    'currency'       => $currency,
+                    'rate'           => $rate
+                ]
+            ]);
+
+            return response()->json([
+                'status'      => 'success',
+                'session_id'  => $session->id,
+                'id'          => $session->id,
+                'session_url' => $session->url
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Stripe Initiate Error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function stripeSuccess(Request $request)
+    {
+        $session_id = $request->get('session_id');
+        if (!$session_id) {
+            return redirect()->route('frontend.orders.checkout')->with('error', 'Invalid session');
+        }
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+        $session = Session::retrieve($session_id);
+
+        if ($session->payment_status === 'paid') {
+            $user = Auth::user();
+            $metadata = $session->metadata;
+
+            $carts = Cart::where('user_id', $user->id)->get();
+
+            $prefix = '152356';
+            $lastOrder = Order::where('order_number', 'like', $prefix . '%')
+                ->latest('id')
+                ->first();
+
+            $nextNumber = 1;
+            if ($lastOrder) {
+                $lastNumber = (int) substr($lastOrder->order_number, strlen($prefix));
+                $nextNumber = $lastNumber + 1;
+            }
+
+            $order_number = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
+            $order = Order::create([
+                'user_id'                  => $user->id,
+                'address_id'               => $metadata->address_id,
+                'coupon_code_id'           => $metadata->coupon_code_id,
+                'order_number'             => $order_number,
+                'stripe_session_id'        => $session->id,
+                'stripe_payment_intent_id' => $session->payment_intent,
+                'shiprocket_status'        => 'NEW',
+                'gst'                      => ($session->amount_total / 100 / 1.18) * 0.18,
+                'total_amount'             => ($session->amount_total / 100) / $metadata->rate, // Store in base currency GBP
+                'currency_code'            => $metadata->currency ?? 'GBP',
+                'exchange_rate'            => $metadata->rate ?? 1.0,
+                'payment_status'           => 'COMPLETED',
+                'payment_method'           => 'GATEWAY'
+            ]);
+
+            foreach ($carts as $cart) {
+                $cart_data = getCartData($cart);
+
+                OrderProduct::create([
+                    'order_id'             => $order->id,
+                    'product_id'           => $cart->product_id,
+                    'property_values'      => $cart->property_values,
+                    'property_value_names' => $cart_data['property_values'],
+                    'quantity'             => $cart->quantity,
+                    'price'                => $cart_data['price'],
+                    'gst'                  => $cart_data['price'] * 0.18,
+                    'total_amount'         => $cart->quantity * $cart_data['price'],
+                    'coupon_code_id'       => $metadata->coupon_code_id,
+                ]);
+
+                $productPriceQuery = ProductPrice::where('product_id', $cart->product_id);
+                foreach ($cart->property_values as $value) {
+                    $productPriceQuery->whereJsonContains('property_values', (int)$value);
+                }
+                $productPrice = $productPriceQuery->first();
+
+                if ($productPrice) {
+                    $newStock = max(0, $productPrice->stock - $cart->quantity);
+                    $productPrice->stock = $newStock;
+                    $productPrice->save();
+                }
+            }
+
+            Cart::where('user_id', $user->id)->delete();
+
+            $data = [
+                'subject'        => 'Order Confirmation - #' . $order->order_number,
+                'order_number'   => $order->order_number,
+                'customer_name'  => $order->user->full_name,
+                'total_amount'   => $order->total_amount,
+                'order_products' => $order->products,
+            ];
+
+            $variables = $order->order_number . '|' . config('app.url');
+            send_sms($order->user->mobile, $variables, 185480);
+            EmailService::sendEmail($user->email, 'emails.order-placed', $data);
+
+            return redirect()->route('frontend.orders')->with('success', 'Order placed successfully');
+        }
+
+        return redirect()->route('frontend.orders.checkout')->with('error', 'Payment failed');
+    }
+
+    public function stripeCancel()
+    {
+        return redirect()->route('frontend.orders.checkout')->with('error', 'Payment was cancelled');
     }
 
     public function verifyPayment(Request $request)
     {
-        $validated = $request->validate([
-            'razorpay_order_id' => 'required',
-            'razorpay_payment_id' => 'required',
-            'amount' => 'required|numeric|min:1',
-            'address_id' => 'required',
-            'coupon_code_id' => 'nullable|exists:coupon_codes,id'
-        ]);
-
-        try {
-            $user = Auth::user();
-            $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
-            $payment = $api->payment->fetch($validated['razorpay_payment_id']);
-
-            if ($payment->status === 'captured') {
-                $carts = Cart::where('user_id', $user->id)->get();
-
-                $prefix = '152356';
-
-                $lastOrder = Order::where('order_number', 'like', $prefix . '%')
-                    ->latest('id')
-                    ->first();
-
-                $nextNumber = 1;
-
-                if ($lastOrder) {
-                    $lastNumber = (int) substr($lastOrder->order_number, strlen($prefix));
-                    $nextNumber = $lastNumber + 1;
-                }
-
-                $order_number = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
-
-                $order = Order::create([
-                    'user_id' => $user->id,
-                    'address_id' => $validated['address_id'],
-                    'coupon_code_id' => $validated['coupon_code_id'],
-                    'order_number' => $order_number,
-                    'razorpay_order_id' => $payment->order_id,
-                    'razorpay_payment_id' => $validated['razorpay_payment_id'],
-                    'shiprocket_status' => 'NEW',
-                    'gst' => ($validated['amount'] / 1.18) * 0.18,
-                    'total_amount' => $validated['amount'],
-                    'payment_status' => 'COMPLETED',
-                    'payment_method' => 'GATEWAY'
-                ]);
-
-                foreach ($carts as $cart) {
-                    $cart_data = getCartData($cart);
-
-                    OrderProduct::create([
-                        'order_id' => $order->id,
-                        'product_id' => $cart->product_id,
-                        'property_values' => $cart->property_values,
-                        'property_value_names' => $cart_data['property_values'],
-                        'quantity' => $cart->quantity,
-                        'price' => $cart_data['price'],
-                        'gst' => $cart_data['price'] * 0.18,
-                        'total_amount' => $cart->quantity * $cart_data['price'],
-                        'coupon_code_id' => $validated['coupon_code_id'],
-                    ]);
-
-                    $productPriceQuery = ProductPrice::where('product_id', $cart->product_id);
-                    foreach ($cart->property_values as $value) {
-                        $productPriceQuery->whereJsonContains('property_values', (int)$value);
-                    }
-                    $productPrice = $productPriceQuery->first();
-
-                    if ($productPrice) {
-                        $newStock = max(0, $productPrice->stock - $cart->quantity);
-                        $productPrice->stock = $newStock;
-                        $productPrice->save();
-                    }
-                }
-
-                Cart::where('user_id', $user->id)->delete();
-
-                $data = [
-                    'subject' => 'Order Confirmation - #' . $order->order_number,
-                    'order_number' => $order->order_number,
-                    'customer_name' => $order->user->full_name,
-                    'total_amount' => $order->total_amount,
-                    'order_products' => $order->products,
-                ];
-
-                $variables = $order->order_number . '|' . config('app.url');
-
-                send_sms($order->user->mobile, $variables, 185480);
-
-                EmailService::sendEmail($user->email, 'emails.order-placed', $data);
-
-                return response()->json(['status' => 'success', 'message' => 'Payment verified successfully']);
-            } else {
-                return response()->json(['status' => 'error', 'message' => 'Payment verification failed'], 400);
-            }
-        } catch (Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-        }
+        // Deprecated for Stripe Checkout flow
+        return response()->json(['status' => 'error', 'message' => 'Deprecated method'], 404);
     }
 
     public function orders()
@@ -168,11 +222,7 @@ class OrderController extends Controller
 
     public function orderDetails(Order $order)
     {
-        $tracking_activities = [];
-
-        if (isset($order->shiprocket_tracking_response['tracking_data']['shipment_track_activities'])) {
-            $tracking_activities = $order->shiprocket_tracking_response['tracking_data']['shipment_track_activities'];
-        }
+        $tracking_activities = $order->trackingHistories()->orderBy('created_at', 'ASC')->get();
 
         return view('Frontend.Pages.order-details', compact('order', 'tracking_activities'));
     }

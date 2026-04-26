@@ -77,7 +77,7 @@
                                                     <p class="name">{{ $cart->product->name }}</p>
                                                     <span class="variant">{{ $cart_data['property_values'] }}</span>
                                                 </div>
-                                                <span class="price">{{ toIndianCurrency($total_product_price) }}</span>
+                                                <span class="price">{{ toCurrency($total_product_price) }}</span>
                                             </div>
                                         </li>
                                     @endforeach
@@ -88,11 +88,11 @@
                                 @endphp --}}
                                 {{-- <div class="d-flex justify-content-between line pb_20">
                                     <span class="fw-5">GST (18%)</span>
-                                    <span class="total fw-5">{{ toIndianCurrency($gst) }}</span>
+                                    <span class="total fw-5">{{ toCurrency($gst) }}</span>
                                 </div> --}}
                                 <div class="d-flex justify-content-between line pb_20">
                                     <span class="fw-5">Shipping charges</span>
-                                    <span class="total fw-5">{{ toIndianCurrency(0) }}</span>
+                                    <span class="total fw-5">{{ toCurrency(0) }}</span>
                                 </div>
                                 <div class="coupon-box">
                                     <input type="text" id="couponInput" placeholder="Enter Coupon Code"
@@ -107,7 +107,7 @@
 
                                 <div class="d-flex justify-content-between line pb_20">
                                     <h6 class="fw-5">Total</h6>
-                                    <h6 class="total fw-5">{{ toIndianCurrency($total_amount) }}</h6>
+                                    <h6 class="total fw-5">{{ toCurrency($total_amount) }}</h6>
                                 </div>
                                 <div class="wd-check-payment">
                                     <div class="fieldset-radio mb_20">
@@ -159,7 +159,7 @@
 
     @include('Frontend.Modals.address')
 
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    {{-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script> --}}
     <script>
         $(document).ready(function() {
             $('.add-address-btn').click(function(e) {
@@ -241,8 +241,7 @@
                         $('#appliedCouponId').val(res.coupon_code_id);
                         $('#finalPayableAmount').val(res.final_price);
 
-                        $('.tf-page-cart-footer .line h6.total').text('₹' + res.final_price.toFixed(
-                            2));
+                        $('.tf-page-cart-footer .line h6.total').text(res.formatted_final_price);
 
                         toastr.success('Coupon applied successfully!');
                     }
@@ -256,97 +255,58 @@
                 });
             });
 
-            $('#placeOrderBtn').on('click', function(e) {
-                e.preventDefault();
-                $(this).html('Processing...');
-                var paymentMethod = $('.payment-method:checked').val();
-
-                if (paymentMethod === 'GATEWAY') {
-                    razorpayInitiate();
-                }
-
-                if (paymentMethod === 'COD') {
-                    cashOnDeliveryOrder();
-                }
-            });
-
-        });
-
-        // Razorpay Payment Gateway - START
-
-        function razorpayInitiate() {
-            // let totalAmount = {{ round($total_amount) }};
-            // let acceptTerms = $('#accept_terms').is(':checked');
-
-            let totalAmount = $('#finalPayableAmount').val(); // === UPDATED
+        function stripeInitiate() {
+            let totalAmount = $('#finalPayableAmount').val();
             let acceptTerms = $('#accept_terms').is(':checked');
-            let couponCodeId = $('#appliedCouponId').val(); // === ADDED
+            let couponCodeId = $('#appliedCouponId').val();
+            let addressId = $('.address:checked').val();
+
+            if (!acceptTerms) {
+                $('#accept_terms_error').html('Please accept the terms and conditions.');
+                $('#placeOrderBtn').html('Place order');
+                return;
+            }
 
             $.ajax({
-                url: "{{ route('frontend.orders.razorpay-initiate') }}",
+                url: "{{ route('frontend.orders.stripe-initiate') }}",
                 method: 'POST',
                 contentType: 'application/json',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
                 data: JSON.stringify({
-                    _token: '{{ csrf_token() }}',
                     amount: totalAmount,
                     accept_terms: acceptTerms ? 1 : '',
-                    coupon_code_id: couponCodeId // === ADDED
+                    coupon_code_id: couponCodeId,
+                    address_id: addressId
                 }),
                 success: function(response) {
                     if (response.status == 'success') {
-                        createRazorpayOrder(response);
+                        window.location.href = response.session_url;
                     }
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
-                    $.each(xhr.responseJSON.errors, function(key, value) {
-                        $('#' + key + '_error').html(value);
-                    });
-
                     $('#placeOrderBtn').html('Place order');
+                    if (xhr.status === 422) {
+                        $.each(xhr.responseJSON.errors, function(key, value) {
+                            if (key === 'address_id') {
+                                toastr.error('Please select a shipping address.');
+                            } else {
+                                $('#' + key + '_error').html(value);
+                            }
+                        });
+                    } else {
+                        toastr.error('Something went wrong. Please try again.');
+                    }
                 }
             });
         }
 
-        function createRazorpayOrder(data) {
-            let totalAmount = data.amount;
-            let couponCodeId = $('#appliedCouponId').val();
-            var addressId = $('.address:checked').val();
-
-            var options = {
-                "key": data.key,
-                "amount": data.amount * 100,
-                "currency": "INR",
-                "name": "Bamboo Street",
-                "order_id": data.order_id,
-                "handler": function(data) {
-                    $.ajax({
-                        url: '/razorpay/verify',
-                        method: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            _token: '{{ csrf_token() }}',
-                            razorpay_payment_id: data.razorpay_payment_id,
-                            razorpay_order_id: data.razorpay_order_id,
-                            amount: totalAmount,
-                            address_id: addressId,
-                            coupon_code_id: couponCodeId
-                        }),
-                        success: function(response) {
-                            console.log(1234);
-                            if (response.status == 'success') {
-                                window.location.href = '/orders';
-                            }
-                        },
-                        error: function(xhr, ajaxOptions, thrownError) {
-                            console.log(xhr.responseJSON);
-                        }
-                    });
-                }
-            };
-
-            var razorpay = new Razorpay(options);
-            razorpay.open();
-        }
-        // Razorpay Payment Gateway - END
+        $('#placeOrderBtn').on('click', function(e) {
+            e.preventDefault();
+            $(this).html('Redirecting to Payment...');
+            stripeInitiate();
+            });
+        });
     </script>
 @endsection

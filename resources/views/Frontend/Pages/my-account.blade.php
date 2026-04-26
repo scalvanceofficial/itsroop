@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 @section('title')
-    My Account | Bamboo Street
+    My Account | Itsroop
 @endsection
 @section('content')
     <!-- page-title -->
@@ -34,11 +34,4 @@
             </div>
         </div>
     </section>
-    <!-- page-cart -->
-
-    <div class="btn-sidebar-account">
-        <button data-bs-toggle="offcanvas" data-bs-target="#mbAccount" aria-controls="offcanvas">
-            <i class="icon icon-sidebar-2"></i>
-        </button>
-    </div>
 @endsection

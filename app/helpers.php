@@ -47,7 +47,7 @@ function toIndianCurrency($number, $type = null)
     $parts = explode('.', $number);
 
     $integer_part = $parts[0];
-    $decimal_part = rtrim($parts[1], '00');
+    $decimal_part = isset($parts[1]) ? rtrim($parts[1], '00') : '00';
 
     $last_three = substr($integer_part, -3);
     $remaining = substr($integer_part, 0, -3);
@@ -62,6 +62,77 @@ function toIndianCurrency($number, $type = null)
     $decimal_part = ($decimal_part === '') ? '00' : $decimal_part;
 
     return $type == 'pdf' ? $formatted_integer . '.' . $decimal_part : '₹' . $formatted_integer . '.' . $decimal_part;
+}
+
+
+
+/**
+ * Format a price (stored in GBP base) into the user's chosen currency.
+ * Reads currency from session; defaults to GBP.
+ */
+/**
+ * Format a price (stored in GBP base) into a specific currency.
+ * Reads currency from session if $selected is null; defaults to GBP.
+ */
+function toCurrency($amountGbp, $selected = null): string
+{
+    if (!$selected) {
+        $selected = session('currency', 'GBP');
+    }
+
+    // Use cache to avoid frequent DB queries
+    $currency = \Illuminate\Support\Facades\Cache::remember('currency_' . $selected, 3600, function () use ($selected) {
+        return \App\Models\Currency::where('code', $selected)->where('is_active', true)->first();
+    });
+
+    if (!$currency) {
+        // Fallback to GBP if selected not found or inactive
+        $currency = \Illuminate\Support\Facades\Cache::remember('currency_GBP', 3600, function () {
+            return \App\Models\Currency::where('code', 'GBP')->first();
+        });
+    }
+
+    if (!$currency) {
+        return '£' . number_format($amountGbp, 2);
+    }
+
+    $converted = (float) $amountGbp * $currency->exchange_rate;
+
+    return $currency->symbol . number_format($converted, 2);
+}
+
+/**
+ * Get the current currency symbol.
+ */
+function getCurrencySymbol(): string
+{
+    $selected = session('currency', 'GBP');
+
+    $currency = \Illuminate\Support\Facades\Cache::remember('currency_' . $selected, 3600, function () use ($selected) {
+        return \App\Models\Currency::where('code', $selected)->where('is_active', true)->first();
+    });
+
+    if (!$currency) {
+        // Fallback to GBP if selected not found or inactive
+        $currency = \Illuminate\Support\Facades\Cache::remember('currency_GBP', 3600, function () {
+            return \App\Models\Currency::where('code', 'GBP')->first();
+        });
+    }
+
+    return $currency ? $currency->symbol : '£';
+}
+
+/**
+ * Format an amount with a specific currency symbol (no conversion).
+ */
+function formatCurrency($amount, $currencyCode): string
+{
+    $currency = \Illuminate\Support\Facades\Cache::remember('currency_' . $currencyCode, 3600, function () use ($currencyCode) {
+        return \App\Models\Currency::where('code', $currencyCode)->first();
+    });
+
+    $symbol = $currency ? $currency->symbol : '£';
+    return $symbol . number_format($amount, 2);
 }
 
 function getSystemRoles()
@@ -135,7 +206,7 @@ function getDiscountedPercentage($originalPrice, $discountedPrice)
 function inRupe($num, $symbol = true, $pdf = false)
 {
     $nums = explode('.', $num);
-    $num = $nums[0];
+    $num = $nums[0] ?? '0';
 
     $minus = false;
     if (substr($num, 0, 1) === '-') {

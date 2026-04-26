@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 @section('title')
-    About | Bamboo Street
+    About | Itsroop
 @endsection
 @section('content')
     <!-- flat-title -->
@@ -9,30 +9,13 @@
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div class="flat-title my-0">
-                        <span class="title text-center">Welcome to Bamboo Street – Where Sustainability Meets Elegance!
+                        <span class="title text-center">Welcome to Its Roop – Your Independent Source for Luxury!
                         </span>
                         <p class="sub-title text_black-2 text-center" style="text-align: justify !important;">
-                            At Bamboo Street, we believe in crafting a greener future, one bamboo product at a time.Our
-                            journey
-                            began with a simple yet powerful mission – to create a sustainable brand that not only promotes
-                            eco-friendly living but also supports local artisans across India.
-                            Every product we offer is a step towards reducing plastic waste while embracing the beauty of
-                            natural,
-                            handcrafted alternatives.
-                            We take pride in blending traditional craftsmanship with modern sustainability, ensuring that
-                            each item
-                            reflects both quality and environmental consciousness. By choosing Bamboo Street, you are not
-                            just
-                            purchasing a product—you are contributing to a greener planet and supporting the skilled hands
-                            that
-                            bring these creations to life.
-                            Our commitment extends beyond just selling products; we strive to educate and inspire
-                            individuals to
-                            adopt a more sustainable lifestyle.
-                            Through innovation and ethical sourcing, we aim to create a positive impact on both the
-                            environment and
-                            the communities we work with.
-                            Join us in our mission to make a difference one sustainable choice at a time.
+                            At Its Roop, we are dedicated to providing our customers with 100% authentic designer products. As an independent luxury reseller, our mission is to make high-end fashion accessible while ensuring the highest standards of quality and authenticity.
+                            Our journey began with a passion for luxury fashion and a commitment to transparency. We source our products directly from trusted suppliers, ensuring that every item in our collection is genuine and meets our rigorous standards.
+                            We take pride in our independence, which allows us to offer a curated selection of products that reflect modern style and timeless elegance. By choosing Its Roop, you are supporting a business that values authenticity, quality, and exceptional customer service.
+                            Join us in our mission to bring the world of luxury to your doorstep, one authentic piece at a time.
                         </p>
                     </div>
 

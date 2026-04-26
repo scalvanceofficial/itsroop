@@ -12,7 +12,6 @@
     </div>
     <!-- /page-title -->
 
-
     <!-- Section Product -->
     <section class="flat-spacing-2">
         <div class="container">
@@ -115,13 +114,13 @@
                                     <div class="tf-product-info-price">
                                         <div class="price-on-sale text_black" style="font-size:14px; font-weight: 600;">
                                             @if ($product_price)
-                                                {{ toIndianCurrency($product_price->selling_price) }}
+                                                {{ toCurrency($product_price->selling_price) }}
                                             @endif
                                         </div>
 
                                         @if ($product_price && ($product_price->discount_percentage > 0 || $product_price->discount_price > 0))
                                             <div class="compare-at-price" style="font-size:14px; font-weight: 600;">
-                                                {{ toIndianCurrency($product_price->actual_price) }}
+                                                {{ toCurrency($product_price->actual_price) }}
                                             </div>
                                             <div class="discount-percentage">
                                                 <span>{{ round($product_price->discount_percentage) }}</span>% OFF
@@ -260,31 +259,31 @@
                 </form>
                 <hr>
                 <div class="widget-facet">
-                    <div class="facet-title" data-bs-target="#sex-filter" data-bs-toggle="collapse" aria-expanded="true"
-                        aria-controls="sex-filter">
-                        <span>Sex</span>
+                    <div class="facet-title" data-bs-target="#gender-filter" data-bs-toggle="collapse" aria-expanded="true"
+                        aria-controls="gender-filter">
+                        <span>Gender</span>
                         <span class="icon icon-arrow-up"></span>
                     </div>
 
-                    <div id="sex-filter" class="collapse show">
+                    <div id="gender-filter" class="collapse show">
                         <ul class="tf-filter-group current-scrollbar">
 
                             <li class="list-item d-flex gap-12 align-items-center">
-                                <input type="radio" name="sex" class="tf-check sex-filter" value="Male"
-                                    id="sex_male">
-                                <label for="sex_male" class="label"><span>Male</span></label>
+                                <input type="radio" name="gender" class="tf-check gender-filter" value="Men"
+                                    id="gender_men" {{ $selected_gender === 'Men' ? 'checked' : '' }}>
+                                <label for="gender_men" class="label"><span>Men</span></label>
                             </li>
 
                             <li class="list-item d-flex gap-12 align-items-center">
-                                <input type="radio" name="sex" class="tf-check sex-filter" value="Female"
-                                    id="sex_female">
-                                <label for="sex_female" class="label"><span>Female</span></label>
+                                <input type="radio" name="gender" class="tf-check gender-filter" value="Women"
+                                    id="gender_women" {{ $selected_gender === 'Women' ? 'checked' : '' }}>
+                                <label for="gender_women" class="label"><span>Women</span></label>
                             </li>
 
                             <li class="list-item d-flex gap-12 align-items-center">
-                                <input type="radio" name="sex" class="tf-check sex-filter" value="Unisex"
-                                    id="sex_unisex">
-                                <label for="sex_unisex" class="label"><span>Unisex</span></label>
+                                <input type="radio" name="gender" class="tf-check gender-filter" value="Unisex"
+                                    id="gender_unisex" {{ $selected_gender === 'Unisex' ? 'checked' : '' }}>
+                                <label for="gender_unisex" class="label"><span>Unisex</span></label>
                             </li>
 
                         </ul>
@@ -369,22 +368,30 @@
                 let priceSort = $('.price-sort:checked').val();
                 let ratingSort = $('.rating-sort:checked').val();
                 let stockSort = $('.stock-sort:checked').val();
-                let sex = $('.sex-filter:checked').val();
+                let gender = $('.gender-filter:checked').val();
 
+                const urlParams = new URLSearchParams(window.location.search);
+                const search = urlParams.get('search');
+                
                 const categorySlug = window.location.pathname.split('/products/')[1];
                 const decodedCategory = decodeURIComponent(categorySlug);
+
+                // Don't send gender slug as category
+                const genderSlugs = ['men', 'women', 'unisex'];
+                const effectiveCategory = genderSlugs.includes(decodedCategory) ? null : decodedCategory;
 
                 $.ajax({
                     url: "{{ route('frontend.products.filters') }}",
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',
-                        category_slug: decodedCategory,
+                        category_slug: effectiveCategory,
                         property_values: propertyValues,
                         price_sort: priceSort,
                         rating_sort: ratingSort,
                         stock_sort: stockSort,
-                        sex: sex // ✅ NEW
+                        gender: gender,
+                        search: search
                     },
                     success: function(response) {
                         $('#products-container').html(response);
@@ -415,8 +422,8 @@
                 applyFilters();
             });
 
-            // SEX ✅ NEW
-            $(document).on('change', '.sex-filter', function() {
+            // GENDER
+            $(document).on('change', '.gender-filter', function() {
                 applyFilters();
             });
 

@@ -94,7 +94,7 @@
                       <h6 class="fs-3 fw-semibold mb-0">Order Number</h6>
                     </th>
                     <th>
-                      <h6 class="fs-3 fw-semibold mb-0">AWB Code</h6>
+                      <h6 class="fs-3 fw-semibold mb-0">Tracking Number</h6>
                     </th>
                     <th>
                       <h6 class="fs-3 fw-semibold mb-0">Customer</h6>
@@ -126,46 +126,29 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="shiprocketOrderModalLabel">Create Shiprocket Order</h5>
+          <h5 class="modal-title" id="shiprocketOrderModalLabel">Add Tracking Details</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form id="shiprocketOrderForm">
             @csrf
             <input type="hidden" name="order_id" id="order_id">
+            <input type="hidden" name="status" id="tracking_create_status">
+            <input type="hidden" name="estimated_delivery_date" id="tracking_create_date">
 
             <div class="form-group mb-2">
-              <label for="length">Pickup Location <sup>*</sup></label>
-              <select name="pickup_location" class="form-select mb-2"> <sup>*</sup>
-                <option value="" disabled selected>Select Pickup Location </option>
-                <option value="Mumbai">Mumbai</option>
-                <option value="Aurangabad">Aurangabad</option>
-              </select>
-              <span class="text-danger" id="pickup_location-error"></span>
+              <label for="courier_name">Courier Name</label>
+              <input type="text" name="courier_name" class="form-control" id="td_courier_name" placeholder="Enter courier name">
             </div>
 
             <div class="form-group mb-2">
-              <label for="length">Length (cm) <sup>*</sup></label>
-              <input type="text" name="length" class="form-control" id="length" placeholder="Enter length">
-              <span class="text-danger" id="length-error"></span>
+              <label for="tracking_number">Tracking Number <sup>*</sup></label>
+              <input type="text" name="tracking_number" class="form-control" id="td_tracking_number" placeholder="Enter tracking number" required>
             </div>
 
             <div class="form-group mb-2">
-              <label for="breadth">Breadth (cm) <sup>*</sup></label>
-              <input type="text" name="breadth" class="form-control" id="breadth" placeholder="Enter breadth">
-              <span class="text-danger" id="breadth-error"></span>
-            </div>
-
-            <div class="form-group mb-2">
-              <label for="height">Height (cm) <sup>*</sup></label>
-              <input type="text" name="height" class="form-control" id="height" placeholder="Enter height">
-              <span class="text-danger" id="height-error"></span>
-            </div>
-
-            <div class="form-group mb-2">
-              <label for="weight">Weight (kg) <sup>*</sup></label>
-              <input type="text" name="weight" class="form-control" id="weight" placeholder="Enter weight">
-              <span class="text-danger" id="weight-error"></span>
+              <label for="tracking_url">Tracking URL</label>
+              <input type="url" name="tracking_url" class="form-control" id="td_tracking_url" placeholder="Enter tracking URL">
             </div>
 
             <div class="row">
@@ -227,6 +210,72 @@
     </div>
   </div>
 
+
+  <div class="modal fade" id="trackingUpdateOrderModal" tabindex="-1" role="dialog" aria-labelledby="trackingUpdateOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="trackingUpdateOrderModalLabel">Update Order Tracking</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="trackingUpdateOrderForm">
+            @csrf
+            <input type="hidden" name="order_id" id="tracking_update_order_id">
+
+            <div class="form-group mb-2">
+              <label for="tracking_status">Order Status <sup>*</sup></label>
+              <select name="status" class="form-select mb-2" id="tracking_status" required>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Packed">Packed</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Out for Delivery">Out for Delivery</option>
+                <option value="Delivered">Delivered</option>
+              </select>
+              <span class="text-danger" id="status-error"></span>
+            </div>
+
+            <div class="form-group mb-2">
+              <label for="courier_name">Courier Name</label>
+              <input type="text" name="courier_name" class="form-control" id="tracking_courier" placeholder="Enter courier name">
+              <span class="text-danger" id="courier_name-error"></span>
+            </div>
+
+            <div class="form-group mb-2">
+              <label for="tracking_number">Tracking Number</label>
+              <input type="text" name="tracking_number" class="form-control" id="tracking_num" placeholder="Enter tracking number">
+              <span class="text-danger" id="tracking_number-error"></span>
+            </div>
+
+            <div class="form-group mb-2">
+              <label for="tracking_url">Tracking URL</label>
+              <input type="url" name="tracking_url" class="form-control" id="tracking_url" placeholder="Enter tracking URL">
+              <span class="text-danger" id="tracking_url-error"></span>
+            </div>
+
+            <div class="form-group mb-2">
+              <label for="estimated_delivery_date">Estimated Delivery Date</label>
+              <input type="date" name="estimated_delivery_date" class="form-control" id="tracking_date">
+              <span class="text-danger" id="estimated_delivery_date-error"></span>
+            </div>
+
+            <div class="form-group mb-2">
+              <label for="note">Note (Optional)</label>
+              <textarea name="note" class="form-control" id="tracking_note" placeholder="Enter tracking note" rows="2"></textarea>
+              <span class="text-danger" id="note-error"></span>
+            </div>
+
+            <div class="row">
+              <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">Update</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="modal fade" id="shiprocketOrderTrackingModal" tabindex="-1" role="dialog" aria-labelledby="shiprocketOrderTrackingModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -318,8 +367,8 @@
           },
 
           {
-            data: 'awb_code',
-            name: 'orders.awb_code'
+            data: 'tracking_number',
+            name: 'orders.tracking_number'
           },
           {
             data: 'customer',
@@ -369,10 +418,17 @@
 
     $(document).on('click', '.shiprocket-create-order-btn', function() {
       var orderId = $(this).data('id');
+      var status = $(this).data('status');
+      var date = $(this).data('date');
 
       $('#order_id').val(orderId);
-      $('#shiprocketOrderModal').modal('show');
+      $('#tracking_create_status').val(status);
+      $('#tracking_create_date').val(date);
+      $('#td_courier_name').val('');
+      $('#td_tracking_number').val('');
+      $('#td_tracking_url').val('');
 
+      $('#shiprocketOrderModal').modal('show');
     });
 
     $('#shiprocketOrderForm').on('submit', function(e) {
@@ -381,7 +437,7 @@
       var formData = $(this).serialize();
 
       $.ajax({
-        url: "{{ route('admin.shiprocket.order.create') }}",
+        url: "{{ route('admin.orders.update.tracking') }}",
         type: 'POST',
         headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -393,11 +449,7 @@
           $('#datatable').DataTable().draw(false);
         },
         error: function(xhr, status, error) {
-          $.each(xhr.responseJSON.errors, function(key, value) {
-            $('#' + key + '-error').html(value);
-          });
-
-          if (xhr.responseJSON.status == "error") {
+          if (xhr.responseJSON && xhr.responseJSON.status == "error") {
             toastr.error(xhr.responseJSON.message);
           }
         }
@@ -443,6 +495,55 @@
       });
     });
 
+
+    $(document).on('click', '.tracking-update-order-btn', function() {
+      var orderId = $(this).data('id');
+      var status = $(this).data('status');
+      var courier = $(this).data('courier');
+      var tracking = $(this).data('tracking');
+      var url = $(this).data('url');
+      var date = $(this).data('date');
+
+      $('#tracking_update_order_id').val(orderId);
+      if(status) $('#tracking_status').val(status);
+      $('#tracking_courier').val(courier);
+      $('#tracking_num').val(tracking);
+      $('#tracking_url').val(url);
+      $('#tracking_date').val(date);
+      $('#tracking_note').val('');
+
+      $('#trackingUpdateOrderModal').modal('show');
+    });
+
+    $('#trackingUpdateOrderForm').on('submit', function(e) {
+      e.preventDefault();
+
+      var formData = $(this).serialize();
+      $.ajax({
+        url: "{{ route('admin.orders.update.tracking') }}",
+        type: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        data: formData,
+        success: function(response) {
+          toastr.success(response.message);
+          $('#trackingUpdateOrderModal').modal('hide');
+          $('#datatable').DataTable().draw(false);
+        },
+        error: function(xhr, status, error) {
+          $('.text-danger').html(''); 
+          if(xhr.responseJSON.errors) {
+              $.each(xhr.responseJSON.errors, function(key, value) {
+                $('#' + key + '-error').html(value);
+              });
+          }
+          if (xhr.responseJSON && xhr.responseJSON.status == "error") {
+            toastr.error(xhr.responseJSON.message);
+          }
+        }
+      });
+    });
 
     $(document).on('click', '.shiprocket-track-order-btn', function() {
       var orderId = $(this).data('id');

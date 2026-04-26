@@ -131,7 +131,7 @@ class CartController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Cart product updated.',
-                'total_amount' => toIndianCurrency($total_amount)
+                'total_amount' => toCurrency($total_amount)
             ], 200);
         } else {
             return response()->json([

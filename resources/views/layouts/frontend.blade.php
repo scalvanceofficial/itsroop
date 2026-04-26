@@ -13,6 +13,13 @@
     <link rel="stylesheet" href="/frontend/fonts/fonts.css">
     <link rel="stylesheet" href="/frontend/fonts/font-icons.css">
     <link rel="stylesheet" href="/frontend/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('/frontend/css/styles.css') }}" type="text/css">
+    <script>
+        window.currencyConfig = {
+            symbol: "{{ getCurrencySymbol() }}",
+            code: "{{ session('currency', 'GBP') }}"
+        };
+    </script>
     <link rel="stylesheet" href="/frontend/css/swiper-bundle.min.css">
     <link rel="stylesheet" href="/frontend/css/animate.css">
     <link rel="stylesheet" href="/frontend/css/drift-basic.min.css">
@@ -62,6 +69,19 @@
         gtag('config', 'G-DK3FN2HZZN');
     </script>
 
+    <style>
+        .header-fixed-override {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 99999 !important;
+            background-color: white !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+            transition: box-shadow 0.3s ease;
+        }
+    </style>
 </head>
 
 <body class="preload-wrapper popup-loader">
@@ -76,10 +96,10 @@
 
         <!-- Header -->
 
-        <header id="header" class="header-default header-absolute">
+        <header id="header" class="header-default bg-white border-bottom z-3">
             <div class="px_15 lg-px_40">
                 <div class="row wrapper-header align-items-center">
-                    <div class="col-md-4 col-3 tf-lg-hidden">
+                    <div class="col-md-4 col-2 tf-lg-hidden">
                         <a href="#mobileMenu" data-bs-toggle="offcanvas" aria-controls="offcanvasLeft">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 16"
                                 fill="none">
@@ -89,9 +109,9 @@
                             </svg>
                         </a>
                     </div>
-                    <div class="col-xl-3 col-md-4 col-6">
+                    <div class="col-xl-3 col-md-4 col-5">
                         <a href="/" class="logo-header">
-                            <img src="/frontend/tcul-img/logo.png" alt="logo" class="logo" style="width: 180px;">
+                            <img src="{{ asset('/frontend/tcul-img/logo.png') }}" alt="logo" class="logo" style="width: 180px;">
                         </a>
                     </div>
                     <div class="col-xl-6 tf-md-hidden">
@@ -106,63 +126,33 @@
                                     <div class="sub-menu mega-menu">
                                         <div class="container">
                                             <div class="row">
-                                                <div class="col-lg-2">
-                                                    <div class="mega-menu-item">
-                                                        <div class="menu-heading">Shop layouts</div>
-                                                        <ul class="menu-list">
-                                                            <li><a href="#0" class="menu-link-text link">Shoe</a>
-                                                            </li>
-                                                            <li><a href="#0" class="menu-link-text link">Watch</a>
-                                                            </li>
-                                                            <li><a href="#0" class="menu-link-text link">Bages</a>
-                                                            </li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Perfumes</a></li>
-
-                                                        </ul>
+                                                @foreach($menu_categories->take(3) as $category)
+                                                    <div class="col-lg-2">
+                                                        <div class="mega-menu-item">
+                                                            <div class="menu-heading">
+                                                                <a href="{{ route('frontend.products', ['category_slug' => $category->slug]) }}" class="text-dark">{{ $category->name }}</a>
+                                                            </div>
+                                                            <ul class="menu-list">
+                                                                @if(isset($category->menu_subcategories))
+                                                                    @foreach($category->menu_subcategories as $sub)
+                                                                        <li><a href="{{ route('frontend.products', ['category_slug' => $category->slug, 'sub_category' => $sub->name]) }}" class="menu-link-text link">{{ $sub->name }}</a></li>
+                                                                    @endforeach
+                                                                @endif
+                                                            </ul>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <div class="mega-menu-item">
-                                                        <div class="menu-heading">Features</div>
-                                                        <ul class="menu-list">
-                                                            <li><a href="#0" class="menu-link-text link">Shoe</a>
-                                                            </li>
-                                                            <li><a href="#0" class="menu-link-text link">Watch</a>
-                                                            </li>
-                                                            <li><a href="#0" class="menu-link-text link">Bages</a>
-                                                            </li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Perfumes</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <div class="mega-menu-item">
-                                                        <div class="menu-heading">Product styles</div>
-                                                        <ul class="menu-list">
-                                                            <li><a href="#0" class="menu-link-text link">Shoe</a>
-                                                            </li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Watch</a></li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Bages</a></li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Perfumes</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
+                                                @endforeach
                                                 <div class="col-lg-3">
                                                     <div class="collection-item hover-img">
                                                         <div class="collection-inner">
-                                                            <a href="#0" class="collection-image img-style">
+                                                            <a href="{{ route('frontend.products.men') }}" class="collection-image img-style">
                                                                 <img class="lazyload"
                                                                     data-src="/frontend/images/collections/collection-1.jpg"
                                                                     src="/frontend/images/collections/collection-1.jpg"
                                                                     alt="collection-demo-1">
                                                             </a>
                                                             <div class="collection-content">
-                                                                <a href="#0"
+                                                                <a href="{{ route('frontend.products.men') }}"
                                                                     class="tf-btn hover-icon btn-xl collection-title fs-16"><span>Men</span><i
                                                                         class="icon icon-arrow1-top-left"></i></a>
 
@@ -173,14 +163,14 @@
                                                 <div class="col-lg-3">
                                                     <div class="collection-item hover-img">
                                                         <div class="collection-inner">
-                                                            <a href="#0" class="collection-image img-style">
+                                                            <a href="{{ route('frontend.products.women') }}" class="collection-image img-style">
                                                                 <img class="lazyload"
                                                                     data-src="/frontend/images/collections/collection-2.jpg"
                                                                     src="/frontend/images/collections/collection-2.jpg"
                                                                     alt="collection-demo-1">
                                                             </a>
                                                             <div class="collection-content">
-                                                                <a href="#0"
+                                                                <a href="{{ route('frontend.products.women') }}"
                                                                     class="tf-btn btn-xl collection-title fs-16 hover-icon"><span>Women</span><i
                                                                         class="icon icon-arrow1-top-left"></i></a>
                                                             </div>
@@ -197,403 +187,103 @@
                                     <div class="sub-menu mega-menu">
                                         <div class="container">
                                             <div class="row">
-                                                <div class="col-lg-2">
-                                                    <div class="mega-menu-item">
-                                                        <div class="menu-heading">Product layouts</div>
-                                                        <ul class="menu-list">
-                                                            <li><a href="#0" class="menu-link-text link">Shoe</a>
-                                                            </li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Watch</a></li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Bages</a></li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Perfumes</a></li>
-                                                        </ul>
+                                                @foreach($menu_subcategories as $subCategory)
+                                                    <div class="col-lg-2">
+                                                        <div class="mega-menu-item">
+                                                            <div class="menu-heading">
+                                                                <a href="{{ route('frontend.products', ['category_slug' => $subCategory->category->slug ?? 'all', 'sub_category' => $subCategory->name]) }}" class="text-dark">{{ $subCategory->name }}</a>
+                                                            </div>
+                                                            <ul class="menu-list">
+                                                                @foreach($subCategory->menu_products as $product)
+                                                                    <li><a href="{{ route('frontend.products.product-details', ['slug' => $product->slug]) }}" class="menu-link-text link">{{ $product->name }}</a></li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <div class="mega-menu-item">
-                                                        <div class="menu-heading">Product details</div>
-                                                        <ul class="menu-list">
-                                                            <li><a href="#0" class="menu-link-text link">Shoe</a>
-                                                            </li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Watch</a></li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Bages</a></li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Perfumes</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <div class="mega-menu-item">
-                                                        <div class="menu-heading">Product swatchs</div>
-                                                        <ul class="menu-list">
-                                                            <li><a href="#0" class="menu-link-text link">Shoe</a>
-                                                            </li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Watch</a></li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Bages</a></li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Perfumes</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-2">
-                                                    <div class="mega-menu-item">
-                                                        <div class="menu-heading">Product features</div>
-                                                        <ul class="menu-list">
-                                                            <li><a href="#0" class="menu-link-text link">Shoe</a>
-                                                            </li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Watch</a></li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Bages</a></li>
-                                                            <li><a href="#0"
-                                                                    class="menu-link-text link">Perfumes</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
+                                                @endforeach
+                                                {{-- Add Collections if less than 4 categories --}}
+                                                @if($menu_subcategories->count() < 4)
+                                                    @foreach($menu_collections->take(4 - $menu_subcategories->count()) as $collection)
+                                                        <div class="col-lg-2">
+                                                            <div class="mega-menu-item">
+                                                                <div class="menu-heading">
+                                                                    <a href="{{ route('frontend.products', ['collection' => $collection->slug]) }}" class="text-dark">{{ $collection->name }}</a>
+                                                                </div>
+                                                                <ul class="menu-list">
+                                                                    {{-- Show some products from collection if product_ids array exists --}}
+                                                                    @php
+                                                                        $collectionProducts = \App\Models\Product::whereIn('id', $collection->product_ids ?? [])->take(5)->get();
+                                                                    @endphp
+                                                                    @foreach($collectionProducts as $product)
+                                                                        <li><a href="{{ route('frontend.products.product-details', ['slug' => $product->slug]) }}" class="menu-link-text link">{{ $product->name }}</a></li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
                                                 <div class="col-lg-4">
                                                     <div class="menu-heading">Best seller</div>
                                                     <div class="hover-sw-nav hover-sw-2">
                                                         <div dir="ltr" class="swiper tf-product-header">
                                                             <div class="swiper-wrapper">
-                                                                <div class="swiper-slide" lazy="true">
-                                                                    <div class="card-product">
-                                                                        <div class="card-product-wrapper">
-                                                                            <a href="#" class="product-img">
-                                                                                <img class="lazyload img-product"
-                                                                                    data-src="/frontend/images/products/orange-1.jpg"
-                                                                                    src="/frontend/images/products/orange-1.jpg"
-                                                                                    alt="image-product">
-                                                                                <img class="lazyload img-hover"
-                                                                                    data-src="/frontend/images/products/white-1.jpg"
-                                                                                    src="/frontend/images/products/white-1.jpg"
-                                                                                    alt="image-product">
-                                                                            </a>
-                                                                            <div class="list-product-btn absolute-2">
-                                                                                <a href="#quick_add"
-                                                                                    data-bs-toggle="modal"
-                                                                                    class="box-icon bg_white quick-add tf-btn-loading">
-                                                                                    <span class="icon icon-bag"></span>
-                                                                                    <span class="tooltip">Quick
-                                                                                        Add</span>
+                                                                @foreach($menu_best_sellers as $product)
+                                                                    <div class="swiper-slide" lazy="true">
+                                                                        <div class="card-product">
+                                                                            <div class="card-product-wrapper">
+                                                                                <a href="{{ route('frontend.products.product-details', ['slug' => $product->slug]) }}" class="product-img">
+                                                                                    <img class="lazyload img-product"
+                                                                                        data-src="{{ $product->getImage() }}"
+                                                                                        src="{{ $product->getImage() }}"
+                                                                                        alt="{{ $product->name }}">
+                                                                                    @php
+                                                                                        $hoverImage = $product->productImages->skip(1)->first();
+                                                                                    @endphp
+                                                                                    @if($hoverImage)
+                                                                                        <img class="lazyload img-hover"
+                                                                                            data-src="{{ \Storage::url($hoverImage->image) }}"
+                                                                                            src="{{ \Storage::url($hoverImage->image) }}"
+                                                                                            alt="{{ $product->name }}">
+                                                                                    @endif
                                                                                 </a>
-                                                                                <a href="javascript:void(0);"
-                                                                                    class="box-icon bg_white wishlist btn-icon-action">
-                                                                                    <span
-                                                                                        class="icon icon-heart"></span>
-                                                                                    <span class="tooltip">Add to
-                                                                                        Wishlist</span>
-                                                                                    <span
-                                                                                        class="icon icon-delete"></span>
-                                                                                </a>
-                                                                                <a href="#compare"
-                                                                                    data-bs-toggle="offcanvas"
-                                                                                    aria-controls="offcanvasLeft"
-                                                                                    class="box-icon bg_white compare btn-icon-action">
-                                                                                    <span
-                                                                                        class="icon icon-compare"></span>
-                                                                                    <span class="tooltip">Add to
-                                                                                        Compare</span>
-                                                                                    <span
-                                                                                        class="icon icon-check"></span>
-                                                                                </a>
-                                                                                <a href="#quick_view"
-                                                                                    data-bs-toggle="modal"
-                                                                                    class="box-icon bg_white quickview tf-btn-loading">
-                                                                                    <span
-                                                                                        class="icon icon-view"></span>
-                                                                                    <span class="tooltip">Quick
-                                                                                        View</span>
-                                                                                </a>
+                                                                                <div class="list-product-btn absolute-2">
+                                                                                    <a href="#shoppingCart"
+                                                                                        data-bs-toggle="modal"
+                                                                                        class="box-icon bg_white quick-add tf-btn-loading">
+                                                                                        <span class="icon icon-bag"></span>
+                                                                                        <span class="tooltip">Add to cart</span>
+                                                                                    </a>
+                                                                                    <a href="javascript:void(0);"
+                                                                                        class="box-icon bg_white wishlist btn-icon-action">
+                                                                                        <span
+                                                                                            class="icon icon-heart"></span>
+                                                                                        <span class="tooltip">Add to
+                                                                                            Wishlist</span>
+                                                                                        <span
+                                                                                            class="icon icon-delete"></span>
+                                                                                    </a>
+                                                                                    <a href="#quick_view"
+                                                                                        data-bs-toggle="modal"
+                                                                                        class="box-icon bg_white quickview tf-btn-loading">
+                                                                                        <span
+                                                                                            class="icon icon-view"></span>
+                                                                                        <span class="tooltip">Quick
+                                                                                            View</span>
+                                                                                    </a>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                        <div class="card-product-info">
-                                                                            <a href="#"
-                                                                                class="title link">Ribbed Tank Top</a>
-                                                                            <span class="price">$16.95</span>
-                                                                            <ul class="list-color-product">
-                                                                                <li
-                                                                                    class="list-color-item color-swatch active">
-                                                                                    <span class="tooltip">Orange</span>
-                                                                                    <span
-                                                                                        class="swatch-value bg_orange-3"></span>
-                                                                                    <img class="lazyload"
-                                                                                        data-src="/frontend/images/products/orange-1.jpg"
-                                                                                        src="/frontend/images/products/orange-1.jpg"
-                                                                                        alt="image-product">
-                                                                                </li>
-                                                                                <li
-                                                                                    class="list-color-item color-swatch">
-                                                                                    <span class="tooltip">Black</span>
-                                                                                    <span
-                                                                                        class="swatch-value bg_dark"></span>
-                                                                                    <img class="lazyload"
-                                                                                        data-src="/frontend/images/products/black-1.jpg"
-                                                                                        src="/frontend/images/products/black-1.jpg"
-                                                                                        alt="image-product">
-                                                                                </li>
-                                                                                <li
-                                                                                    class="list-color-item color-swatch">
-                                                                                    <span class="tooltip">White</span>
-                                                                                    <span
-                                                                                        class="swatch-value bg_white"></span>
-                                                                                    <img class="lazyload"
-                                                                                        data-src="/frontend/images/products/white-1.jpg"
-                                                                                        src="/frontend/images/products/white-1.jpg"
-                                                                                        alt="image-product">
-                                                                                </li>
-                                                                            </ul>
+                                                                            <div class="card-product-info">
+                                                                                <a href="{{ route('frontend.products.product-details', ['slug' => $product->slug]) }}"
+                                                                                    class="title link">{{ $product->name }}</a>
+                                                                                <span class="price">
+                                                                                    @if($product->getPrice())
+                                                                                        {{ toCurrency($product->getPrice()->selling_price) }}
+                                                                                    @endif
+                                                                                </span>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                                <div class="swiper-slide" lazy="true">
-                                                                    <div class="card-product">
-                                                                        <div class="card-product-wrapper">
-                                                                            <div class="product-img">
-                                                                                <img class="lazyload img-product"
-                                                                                    data-src="/frontend/images/products/white-3.jpg"
-                                                                                    src="/frontend/images/products/white-3.jpg"
-                                                                                    alt="image-product">
-                                                                                <img class="lazyload img-hover"
-                                                                                    data-src="/frontend/images/products/white-4.jpg"
-                                                                                    src="/frontend/images/products/white-4.jpg"
-                                                                                    alt="image-product">
-                                                                            </div>
-                                                                            <div class="list-product-btn absolute-2">
-                                                                                <a href="#shoppingCart"
-                                                                                    data-bs-toggle="modal"
-                                                                                    class="box-icon bg_white quick-add tf-btn-loading">
-                                                                                    <span class="icon icon-bag"></span>
-                                                                                    <span class="tooltip">Add to
-                                                                                        cart</span>
-                                                                                </a>
-                                                                                <a href="javascript:void(0);"
-                                                                                    class="box-icon bg_white wishlist btn-icon-action">
-                                                                                    <span
-                                                                                        class="icon icon-heart"></span>
-                                                                                    <span class="tooltip">Add to
-                                                                                        Wishlist</span>
-                                                                                    <span
-                                                                                        class="icon icon-delete"></span>
-                                                                                </a>
-                                                                                <a href="#compare"
-                                                                                    data-bs-toggle="offcanvas"
-                                                                                    aria-controls="offcanvasLeft"
-                                                                                    class="box-icon bg_white compare btn-icon-action">
-                                                                                    <span
-                                                                                        class="icon icon-compare"></span>
-                                                                                    <span class="tooltip">Add to
-                                                                                        Compare</span>
-                                                                                    <span
-                                                                                        class="icon icon-check"></span>
-                                                                                </a>
-                                                                                <a href="#quick_view"
-                                                                                    data-bs-toggle="modal"
-                                                                                    class="box-icon bg_white quickview tf-btn-loading">
-                                                                                    <span
-                                                                                        class="icon icon-view"></span>
-                                                                                    <span class="tooltip">Quick
-                                                                                        View</span>
-                                                                                </a>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="card-product-info">
-                                                                            <a href="#"
-                                                                                class="title link">Oversized Printed
-                                                                                T-shirt</a>
-                                                                            <span class="price">$10.00</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="swiper-slide" lazy="true">
-                                                                    <div class="card-product">
-                                                                        <div class="card-product-wrapper">
-                                                                            <div class="product-img">
-                                                                                <img class="lazyload img-product"
-                                                                                    data-src="/frontend/images/products/white-2.jpg"
-                                                                                    src="/frontend/images/products/white-2.jpg"
-                                                                                    alt="image-product">
-                                                                                <img class="lazyload img-hover"
-                                                                                    data-src="/frontend/images/products/pink-1.jpg"
-                                                                                    src="/frontend/images/products/pink-1.jpg"
-                                                                                    alt="image-product">
-                                                                            </div>
-                                                                            <div class="list-product-btn">
-                                                                                <a href="#quick_add"
-                                                                                    data-bs-toggle="modal"
-                                                                                    class="box-icon bg_white quick-add tf-btn-loading">
-                                                                                    <span class="icon icon-bag"></span>
-                                                                                    <span class="tooltip">Quick
-                                                                                        Add</span>
-                                                                                </a>
-                                                                                <a href="javascript:void(0);"
-                                                                                    class="box-icon bg_white wishlist btn-icon-action">
-                                                                                    <span
-                                                                                        class="icon icon-heart"></span>
-                                                                                    <span class="tooltip">Add to
-                                                                                        Wishlist</span>
-                                                                                    <span
-                                                                                        class="icon icon-delete"></span>
-                                                                                </a>
-                                                                                <a href="#compare"
-                                                                                    data-bs-toggle="offcanvas"
-                                                                                    aria-controls="offcanvasLeft"
-                                                                                    class="box-icon bg_white compare btn-icon-action">
-                                                                                    <span
-                                                                                        class="icon icon-compare"></span>
-                                                                                    <span class="tooltip">Add to
-                                                                                        Compare</span>
-                                                                                    <span
-                                                                                        class="icon icon-check"></span>
-                                                                                </a>
-                                                                                <a href="#quick_view"
-                                                                                    data-bs-toggle="modal"
-                                                                                    class="box-icon bg_white quickview tf-btn-loading">
-                                                                                    <span
-                                                                                        class="icon icon-view"></span>
-                                                                                    <span class="tooltip">Quick
-                                                                                        View</span>
-                                                                                </a>
-                                                                            </div>
-                                                                            <div class="size-list">
-                                                                                <span>S</span>
-                                                                                <span>M</span>
-                                                                                <span>L</span>
-                                                                                <span>XL</span>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="card-product-info">
-                                                                            <a href="#" class="title">Oversized
-                                                                                Printed T-shirt</a>
-                                                                            <span class="price">$16.95</span>
-                                                                            <ul class="list-color-product">
-                                                                                <li
-                                                                                    class="list-color-item color-swatch active">
-                                                                                    <span class="tooltip">White</span>
-                                                                                    <span
-                                                                                        class="swatch-value bg_white"></span>
-                                                                                    <img class="lazyload"
-                                                                                        data-src="/frontend/images/products/white-2.jpg"
-                                                                                        src="/frontend/images/products/white-2.jpg"
-                                                                                        alt="image-product">
-                                                                                </li>
-                                                                                <li
-                                                                                    class="list-color-item color-swatch">
-                                                                                    <span class="tooltip">Pink</span>
-                                                                                    <span
-                                                                                        class="swatch-value bg_purple"></span>
-                                                                                    <img class="lazyload"
-                                                                                        data-src="/frontend/images/products/pink-1.jpg"
-                                                                                        src="/frontend/images/products/pink-1.jpg"
-                                                                                        alt="image-product">
-                                                                                </li>
-                                                                                <li
-                                                                                    class="list-color-item color-swatch">
-                                                                                    <span class="tooltip">Black</span>
-                                                                                    <span
-                                                                                        class="swatch-value bg_dark"></span>
-                                                                                    <img class="lazyload"
-                                                                                        data-src="/frontend/images/products/black-2.jpg"
-                                                                                        src="/frontend/images/products/black-2.jpg"
-                                                                                        alt="image-product">
-                                                                                </li>
-                                                                            </ul>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="swiper-slide" lazy="true">
-                                                                    <div class="card-product">
-                                                                        <div class="card-product-wrapper">
-                                                                            <div class="product-img">
-                                                                                <img class="lazyload img-product"
-                                                                                    data-src="/frontend/images/products/brown-2.jpg"
-                                                                                    src="/frontend/images/products/brown-2.jpg"
-                                                                                    alt="image-product">
-                                                                                <img class="lazyload img-hover"
-                                                                                    data-src="/frontend/images/products/brown-3.jpg"
-                                                                                    src="/frontend/images/products/brown-3.jpg"
-                                                                                    alt="image-product">
-                                                                            </div>
-                                                                            <div class="size-list">
-                                                                                <span>S</span>
-                                                                                <span>M</span>
-                                                                                <span>L</span>
-                                                                                <span>XL</span>
-                                                                            </div>
-                                                                            <div class="list-product-btn">
-                                                                                <a href="#quick_add"
-                                                                                    data-bs-toggle="modal"
-                                                                                    class="box-icon bg_white quick-add tf-btn-loading">
-                                                                                    <span class="icon icon-bag"></span>
-                                                                                    <span class="tooltip">Quick
-                                                                                        Add</span>
-                                                                                </a>
-                                                                                <a href="javascript:void(0);"
-                                                                                    class="box-icon bg_white wishlist btn-icon-action">
-                                                                                    <span
-                                                                                        class="icon icon-heart"></span>
-                                                                                    <span class="tooltip">Add to
-                                                                                        Wishlist</span>
-                                                                                    <span
-                                                                                        class="icon icon-delete"></span>
-                                                                                </a>
-                                                                                <a href="#compare"
-                                                                                    data-bs-toggle="offcanvas"
-                                                                                    aria-controls="offcanvasLeft"
-                                                                                    class="box-icon bg_white compare btn-icon-action">
-                                                                                    <span
-                                                                                        class="icon icon-compare"></span>
-                                                                                    <span class="tooltip">Add to
-                                                                                        Compare</span>
-                                                                                    <span
-                                                                                        class="icon icon-check"></span>
-                                                                                </a>
-                                                                                <a href="#quick_view"
-                                                                                    data-bs-toggle="modal"
-                                                                                    class="box-icon bg_white quickview tf-btn-loading">
-                                                                                    <span
-                                                                                        class="icon icon-view"></span>
-                                                                                    <span class="tooltip">Quick
-                                                                                        View</span>
-                                                                                </a>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="card-product-info">
-                                                                            <a href="#"
-                                                                                class="title link">V-neck linen
-                                                                                T-shirt</a>
-                                                                            <span class="price">$114.95</span>
-                                                                            <ul class="list-color-product">
-                                                                                <li
-                                                                                    class="list-color-item color-swatch active">
-                                                                                    <span class="tooltip">Brown</span>
-                                                                                    <span
-                                                                                        class="swatch-value bg_brown"></span>
-                                                                                    <img class="lazyload"
-                                                                                        data-src="/frontend/images/products/brown-2.jpg"
-                                                                                        src="/frontend/images/products/brown-2.jpg"
-                                                                                        alt="image-product">
-                                                                                </li>
-                                                                                <li
-                                                                                    class="list-color-item color-swatch">
-                                                                                    <span class="tooltip">White</span>
-                                                                                    <span
-                                                                                        class="swatch-value bg_white"></span>
-                                                                                    <img class="lazyload"
-                                                                                        data-src="/frontend/images/products/white-5.jpg"
-                                                                                        src="/frontend/images/products/white-5.jpg"
-                                                                                        alt="image-product">
-                                                                                </li>
-                                                                            </ul>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+                                                                @endforeach
                                                             </div>
                                                         </div>
                                                         <div
@@ -644,8 +334,20 @@
                             </ul>
                         </nav>
                     </div>
-                    <div class="col-xl-3 col-md-4 col-3">
-                        <ul class="nav-icon d-flex justify-content-end align-items-center gap-20">
+                    <div class="col-xl-3 col-md-4 col-5">
+                        <ul class="nav-icon d-flex justify-content-end align-items-center gap-10 md-gap-20">
+                            <li class="nav-currency">
+                                <form action="{{ route('frontend.set-currency') }}" method="POST" id="currencyForm">
+                                    @csrf
+                                    <select name="currency" class="form-select-sm border-0 bg-transparent fw-500" onchange="this.form.submit()">
+                                        @foreach(\App\Models\Currency::where('is_active', true)->get() as $currency)
+                                            <option value="{{ $currency->code }}" {{ session('currency', 'GBP') == $currency->code ? 'selected' : '' }}>
+                                                {{ $currency->symbol }} {{ $currency->code }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            </li>
                             <li class="nav-search">
                                 <a href="#canvasSearch" data-bs-toggle="offcanvas" aria-controls="offcanvasLeft"
                                     class="nav-icon-item">
@@ -692,35 +394,46 @@
                                 <div class="footer-infor">
                                     <div class="footer-logo">
                                         <a href="/">
-                                            <img src="/frontend/tcul-img/logo.png" alt="" width="160px">
+                                            <img src="{{ asset('/frontend/tcul-img/logo.png') }}" alt="" width="160px">
                                         </a>
                                     </div>
                                     <ul>
                                         <li>
-                                            <p>Address: 1234 Fashion Street, Suite 567, <br> New York, NY 10001</p>
+                                            <p>Address: Its Roop Ltd, UK</p>
                                         </li>
                                         <li>
-                                            <p>Email: <a href="#">info@fashionshop.com</a></p>
+                                            <p>Email: <a href="mailto:info@itsroop.com">info@itsroop.com</a></p>
                                         </li>
                                         <li>
-                                            <p>Phone: <a href="#">(212) 555-1234</a></p>
+                                            <p>Phone: <a href="tel:+44 0000000000">Support</a></p>
                                         </li>
                                     </ul>
                                     <a href="#0" class="tf-btn btn-line">Get direction<i
                                             class="icon icon-arrow1-top-left"></i></a>
                                     <ul class="tf-social-icon d-flex gap-10">
-                                        <li><a href="#"
-                                                class="box-icon w_34 round social-facebook social-line"><i
-                                                    class="icon fs-14 icon-fb"></i></a></li>
-
-                                        <li><a href="#"
-                                                class="box-icon w_34 round social-instagram social-line"><i
-                                                    class="icon fs-14 icon-instagram"></i></a></li>
-
-                                        <li><a href="#"
-                                                class="box-icon w_34 round social-pinterest social-line"><i
-                                                    class="icon fs-14 icon-pinterest-1"></i></a></li>
+                                        <li><a href="#" class="social-icon-footer"><i class="icon fs-14 icon-fb"></i></a></li>
+                                        <li><a href="#" class="social-icon-footer"><i class="icon fs-14 icon-instagram"></i></a></li>
+                                        <li><a href="#" class="social-icon-footer"><i class="icon fs-12 icon-Icon-x"></i></a></li>
+                                        <li><a href="#" class="social-icon-footer"><i class="icon fs-14 icon-tiktok"></i></a></li>
+                                        <li><a href="#" class="social-icon-footer"><i class="icon fs-14 icon-pinterest-1"></i></a></li>
                                     </ul>
+                                    <style>
+                                        .social-icon-footer {
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            width: 34px;
+                                            height: 34px;
+                                            border-radius: 50%;
+                                            border: 1px solid #000;
+                                            color: #000;
+                                            transition: all 0.3s ease;
+                                        }
+                                        .social-icon-footer:hover {
+                                            background-color: #000;
+                                            color: #fff;
+                                        }
+                                    </style>
                                 </div>
                             </div>
                             <div class="col-xl-3 col-md-6 col-12 footer-col-block">
@@ -732,17 +445,17 @@
                                 </div>
                                 <ul class="footer-menu-list tf-collapse-content">
                                     <li>
-                                        <a href="#0" class="footer-menu_item">Privacy Policy</a>
+                                        <a href="{{ route('frontend.privacy-policy') }}" class="footer-menu_item">Privacy Policy</a>
                                     </li>
                                     <li>
-                                        <a href="#0" class="footer-menu_item"> Returns + Exchanges
+                                        <a href="{{ route('frontend.return-and-exchange') }}" class="footer-menu_item"> Returns + Exchanges
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#0" class="footer-menu_item">Shipping</a>
+                                        <a href="{{ route('frontend.shipping') }}" class="footer-menu_item">Shipping</a>
                                     </li>
                                     <li>
-                                        <a href="#0" class="footer-menu_item">Terms &amp;
+                                        <a href="{{ route('frontend.terms-and-conditions') }}" class="footer-menu_item">Terms &amp;
                                             Conditions</a>
                                     </li>
                                     <li>
@@ -789,14 +502,13 @@
                             <div class="col-xl-3 col-md-6 col-12">
                                 <div class="footer-newsletter footer-col-block">
                                     <div class="footer-heading footer-heading-desktop">
-                                        <h6 class="fw-5">Sign Up for Email</h6>
+                                        <h6 class="fw-5">Request Your Product</h6>
                                     </div>
                                     <div class="footer-heading footer-heading-moblie">
-                                        <h6 class="fw-5">Sign Up for Email</h6>
+                                        <h6 class="fw-5">Request Your Product</h6>
                                     </div>
                                     <div class="tf-collapse-content">
-                                        <div class="footer-menu_item">Sign up to get first dibs on new arrivals, sales,
-                                            exclusive content, events and more!</div>
+                                        <div class="footer-menu_item">Looking for a specific product? Let us know and we'll do our best to get it for you!</div>
                                         <div class="sib-form">
                                             <div id="sib-form-container" class="sib-form-container">
                                                 <div id="sib-container"
@@ -804,25 +516,36 @@
                                                     <form method="POST" action="/subscribe-enquiry"
                                                         id="subscribeForm" enctype="multipart/form-data">
                                                         @csrf
-                                                        <div class="sib-input sib-form-block">
+                                                        <div class="sib-input sib-form-block mb-3">
                                                             <div class="form__entry entry_block">
-                                                                <div class="form__label-row ">
-                                                                    <label class="entry__label" for="EMAIL">
-                                                                    </label>
-                                                                    <div class="entry__field">
-                                                                        <input class="input radius-60" type="text"
-                                                                            id="email" class="form-control"
-                                                                            name="email" autocomplete="off"
-                                                                            placeholder="Enter your Product Here...."
-                                                                            data-required="true" />
-                                                                        <div class="field_error" id="email-error"
-                                                                            style="color:#ff0000"></div>
-                                                                    </div>
+                                                                <div class="entry__field">
+                                                                    <input class="input radius-60" type="text"
+                                                                        id="email_req" class="form-control"
+                                                                        name="email" autocomplete="off"
+                                                                        placeholder="Your Email"
+                                                                        data-required="true" />
+                                                                    <div class="field_error" id="email-error"
+                                                                        style="color:#ff0000"></div>
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <div class="sib-form-block">
+                                                        <div class="sib-form-block mb-3">
+                                                            <div class="sib-input sib-form-block">
+                                                                <textarea class="input radius-10 w-100" name="product_request" rows="3"
+                                                                    placeholder="Request Your Product (Name/Details)"
+                                                                    style="padding: 10px 20px; border: 1px solid #ddd;" required></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="sib-form-block mb-3">
+                                                            <div class="sib-input sib-form-block">
+                                                                <label class="form-label" style="font-size: 0.9em; color: #666;">Upload Product Image (Optional)</label>
+                                                                <input type="file" name="product_image" class="form-control radius-60" accept="image/*" style="padding: 10px 20px;">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="sib-form-block mb-3">
                                                             <div class="sib-optin sib-form-block">
                                                                 <div class="form__entry entry_mcq">
                                                                     <label>
@@ -836,9 +559,9 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="sib-form-block button-submit">
+                                                        <div class="sib-form-block button-submit text-center">
                                                             <button type="submit" id="started"
-                                                                class="sib-form-block__button sib-form-block__button-with-loader tf-btn btn-sm radius-60 btn-fill btn-icon animate-hover-btn">
+                                                                class="sib-form-block__button sib-form-block__button-with-loader tf-btn btn-sm radius-60 btn-fill btn-icon animate-hover-btn w-100 justify-content-center">
                                                                 Request Your Product <i
                                                                     class="icon icon-arrow1-top-left"></i>
                                                             </button>
@@ -864,11 +587,11 @@
                                     class="footer-bottom-wrap d-flex gap-20 flex-wrap justify-content-between align-items-center">
                                     <div class="footer-menu_item">© 2026 Itsroop Store. All Rights Reserved</div>
                                     <div class="tf-payment">
-                                        <img src="/frontend/images/payments/visa.png" alt="">
-                                        <img src="/frontend/images/payments/img-1.png" alt="">
-                                        <img src="/frontend/images/payments/img-2.png" alt="">
-                                        <img src="/frontend/images/payments/img-3.png" alt="">
-                                        <img src="/frontend/images/payments/img-4.png" alt="">
+                                        <img src="{{ asset('/frontend/images/payments/visa.png') }}" alt="">
+                                        <img src="{{ asset('/frontend/images/payments/img-1.png') }}" alt="">
+                                        <img src="{{ asset('/frontend/images/payments/img-2.png') }}" alt="">
+                                        <img src="{{ asset('/frontend/images/payments/img-3.png') }}" alt="">
+                                        <img src="{{ asset('/frontend/images/payments/img-4.png') }}" alt="">
                                     </div>
                                 </div>
                             </div>
@@ -951,7 +674,32 @@
                         <a href="/" class="mb-menu-link">Home</a>
                     </li>
                     <li class="nav-mb-item">
-                        <a href="/products" class="mb-menu-link">Products</a>
+                        <a href="#dropdown-menu-shop" class="collapsed mb-menu-link current"
+                            data-bs-toggle="collapse" aria-expanded="false" aria-controls="dropdown-menu-shop">
+                            <span>Shop</span>
+                            <span class="btn-open-sub"></span>
+                        </a>
+                        <div id="dropdown-menu-shop" class="collapse">
+                            <ul class="sub-nav-menu">
+                                @foreach($menu_categories ?? [] as $category)
+                                    <li><a href="{{ route('frontend.products', ['category_slug' => $category->slug]) }}" class="sub-nav-link text-capitalize">{{ $category->name }}</a></li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-mb-item">
+                        <a href="#dropdown-menu-products" class="collapsed mb-menu-link current"
+                            data-bs-toggle="collapse" aria-expanded="false" aria-controls="dropdown-menu-products">
+                            <span>Products</span>
+                            <span class="btn-open-sub"></span>
+                        </a>
+                        <div id="dropdown-menu-products" class="collapse">
+                            <ul class="sub-nav-menu">
+                                @foreach($menu_subcategories ?? [] as $subCategory)
+                                    <li><a href="{{ route('frontend.products', ['category_slug' => $subCategory->category->slug ?? 'all', 'sub_category' => $subCategory->name]) }}" class="sub-nav-link text-capitalize">{{ $subCategory->name }}</a></li>
+                                @endforeach
+                            </ul>
+                        </div>
                     </li>
                     <li class="nav-mb-item">
                         <a href="/about" class="mb-menu-link">About</a>
@@ -1005,13 +753,13 @@
                         {{-- <li>Address: RH No. 43, Grand Kalyan, Opp WALMI, Kanchanwadi, Aurangabad, Maharashtra, India -
                             431136</li> --}}
                         <li><i class="fas fa-phone" style="margin-right: 8px; color: #36614b;"></i>
-                            <a href="tel:+91 7304229346"><b>
-                                    +91
-                                    7304229346</b></a>
+                            <a href="tel:+44 0000 000000"><b>
+                                    +44
+                                    0000 000000</b></a>
                         </li>
                         <li><i class="fas fa-envelope" style="margin-right: 8px; color: #36614b;"></i><a
-                                href="mailto:updates@bamboostreet.in"><b>
-                                    updates@bamboostreet.in</b></a>
+                                href="mailto:info@itsroop.com"><b>
+                                    info@itsroop.com</b></a>
                         </li>
 
                     </ul>
@@ -1057,7 +805,7 @@
 
             $('#loginForm').submit(function(e) {
                 e.preventDefault();
-                $('#mobileError').empty();
+                $('#emailError').empty();
 
                 $('#loginBtnText').addClass('d-none');
                 $('#loginBtnLoader').removeClass('d-none');
@@ -1079,8 +827,8 @@
                         $('#loginBtn').prop('disabled', false);
 
                         if (data.status == 'success') {
-                            $('#verifyOtpMobile').val(data.mobile);
-                            $('#mobile').val('');
+                            $('#verifyOtpEmail').val(data.email);
+                            $('#email').val('');
                             $('#otp').val('');
                             $('#login').modal('hide');
                             $('#verifyOtp').modal('show');
@@ -1100,7 +848,7 @@
                         $('#loginBtn').prop('disabled', false);
 
                         $.each(xhr.responseJSON.errors, function(key, value) {
-                            $('#mobileError').html(value);
+                            $('#emailError').html(value);
                         });
                     }
                 });
@@ -1131,9 +879,9 @@
                         if (data.status == 'success') {
                             $('#user_id').val(data.user_id);
                             $('#verifyOtp').modal('hide');
-                            $('#mobile').val('');
+                            $('#email').val('');
                             $('#otp').val('');
-                            $('#verifyOtpMobile').val('');
+                            $('#verifyOtpEmail').val('');
 
                             toastr.success(
                                 data.message,
@@ -1493,21 +1241,32 @@
     {{-- Global Search --}}
     <script>
         $(document).ready(function() {
-            $('#searchForm').submit(function(e) {
-                e.preventDefault();
-                var searchQuery = $('#searchInput').val();
+            let debounceTimer;
+            $('#searchInput').on('input', function() {
+                clearTimeout(debounceTimer);
+                let query = $(this).val();
 
-                if (searchQuery) {
-                    window.location.href = '/products?search=' + encodeURIComponent(searchQuery);
+                if (query.length >= 2) {
+                    debounceTimer = setTimeout(function() {
+                        $.ajax({
+                            url: "{{ route('frontend.products.search-recommendations') }}",
+                            type: 'GET',
+                            data: { q: query },
+                            success: function(response) {
+                                $('#search-results-container').html(response);
+                            }
+                        });
+                    }, 300);
+                } else {
+                    $('#search-results-container').html('');
                 }
             });
 
-            $('#searchInput').on('input', function() {
-                var searchQuery = $(this).val();
-                if (searchQuery.length > 0) {
-                    $('#searchBtn').removeAttr('disabled');
-                } else {
-                    $('#searchBtn').attr('disabled', 'disabled');
+            $('#searchForm').submit(function(e) {
+                e.preventDefault();
+                var searchQuery = $('#searchInput').val();
+                if (searchQuery) {
+                    window.location.href = '/products?search=' + encodeURIComponent(searchQuery);
                 }
             });
         });

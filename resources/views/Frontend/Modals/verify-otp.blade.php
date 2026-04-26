@@ -9,9 +9,9 @@
         <form action="{{ route('frontend.verify-otp') }}" accept-charset="utf-8" id="verifyOtpForm">
           @csrf
           <div class="tf-field style-1">
-            <input type="hidden" name="mobile" id="verifyOtpMobile">
-            <input class="tf-field-input tf-input" placeholder=" " type="text" name="otp" id="otp">
-            <label class="tf-field-label" for="">OTP*</label>
+            <input type="hidden" name="email" id="verifyOtpEmail">
+            <input class="tf-field-input tf-input" placeholder=" " type="text" name="otp" id="otp" maxlength="6">
+            <label class="tf-field-label" for="">Enter 6-digit OTP*</label>
             <span id="otpError" style="color:red"></span>
           </div>
           <div class="bottom">

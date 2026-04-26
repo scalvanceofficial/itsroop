@@ -25,6 +25,19 @@
                                     value="{{ isset($couponcode) ? $couponcode->coupon_code : '' }}" />
                                 <div id="coupon_code-error" style="color:red"></div>
                             </div>
+                            <div class="col-md-6">
+                                <label class="control-label col-form-label">
+                                    Currency <sup class="tcul-star-restrict text-danger">*</sup>
+                                </label>
+                                <select name="currency_code" class="form-control">
+                                    @foreach(\App\Models\Currency::where('is_active', true)->get() as $currency)
+                                        <option value="{{ $currency->code }}" {{ (isset($couponcode) && $couponcode->currency_code == $currency->code) ? 'selected' : '' }}>
+                                            {{ $currency->name }} ({{ $currency->code }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div id="currency_code-error" style="color:red"></div>
+                            </div>
                         </div>
                         <div class="row mt-2">
                             <div class="col-sm-12 col-md-6">

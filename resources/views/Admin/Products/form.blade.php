@@ -84,6 +84,22 @@
                                 <input type="text" class="form-control" placeholder="Enter keywords" name="keywords"
                                     value="{{ isset($product) ? $product->keywords : '' }}" />
                             </div>
+                            <div class="col-sm-12 col-md-6">
+                                <label class="control-label col-form-label">Gender</label>
+                                <select class="form-control" name="gender" id="gender">
+                                    <option value="">-- Select Gender (optional) --</option>
+                                    <option value="Men"
+                                        {{ isset($product) && $product->gender == 'Men' ? 'selected' : '' }}>Men
+                                    </option>
+                                    <option value="Women"
+                                        {{ isset($product) && $product->gender == 'Women' ? 'selected' : '' }}>Women
+                                    </option>
+                                    <option value="Unisex"
+                                        {{ isset($product) && $product->gender == 'Unisex' ? 'selected' : '' }}>Unisex
+                                    </option>
+                                </select>
+                                <div id="gender-error" style="color:red"></div>
+                            </div>
                             <div class="row">
                                 <!-- Select Type -->
                                 <div class="col-md-6">

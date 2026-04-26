@@ -19,8 +19,8 @@ class Order extends Model
         'user_id',
         'address_id',
         'order_number',
-        'razorpay_order_id',
-        'razorpay_payment_id',
+        'stripe_session_id',
+        'stripe_payment_intent_id',
         'shiprocket_order_id',
         'shiprocket_shipment_id',
         'shiprocket_status',
@@ -35,9 +35,14 @@ class Order extends Model
         'height',
         'weight',
         'shiprocket_order_create_response',
-        'awb_code',
+        'tracking_number',
+        'courier_name',
+        'tracking_url',
+        'estimated_delivery_date',
         'shiprocket_tracking_response',
         'coupon_code_id',
+        'currency_code',
+        'exchange_rate',
     ];
 
     protected $casts = [
@@ -62,6 +67,11 @@ class Order extends Model
     public function products()
     {
         return $this->hasMany(OrderProduct::class);
+    }
+
+    public function trackingHistories()
+    {
+        return $this->hasMany(OrderTrackingHistory::class);
     }
 
     public function returnProducts()

@@ -31,11 +31,22 @@ class SubscriberController extends Controller
             ->editColumn('email', function ($subscriber) {
                 return $subscriber->email;
             })
+            ->editColumn('product_details', function ($subscriber) {
+                return $subscriber->product_details ?? '<span class="text-muted">N/A</span>';
+            })
+            ->addColumn('product_image', function ($subscriber) {
+                if ($subscriber->product_image) {
+                    return '<a href="' . \Illuminate\Support\Facades\Storage::url($subscriber->product_image) . '" target="_blank">
+                                <img src="' . \Illuminate\Support\Facades\Storage::url($subscriber->product_image) . '" width="50" class="rounded">
+                            </a>';
+                }
+                return '<span class="text-muted">No Image</span>';
+            })
             ->addColumn('action', function ($subscriber) {
                 return '<span class="badge bg-success">Subscribed</span>'; // You can customize this
             })
             ->addIndexColumn()
-            ->rawColumns(['datetime', 'email', 'action']) // make sure 'action' is included
+            ->rawColumns(['datetime', 'email', 'product_details', 'product_image', 'action']) // make sure 'action' is included
             ->setRowId('id')
             ->make(true);
     }

@@ -17,7 +17,7 @@
                 </div>
                 <div class="col-md-4 mb-2">
                     <strong>Refund:</strong>
-                    {{ toIndianCurrency($return_product->orderProduct->price * $return_product->return_quantity) ?? '-' }}
+                    {{ toCurrency($return_product->orderProduct->price * $return_product->return_quantity) ?? '-' }}
                 </div>
                 <div class="col-md-12 mb-2">
                     <strong>Product:</strong> {{ $return_product->orderProduct->product->name ?? '-' }}

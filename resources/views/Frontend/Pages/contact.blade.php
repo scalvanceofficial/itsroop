@@ -16,40 +16,41 @@
         <div class="container">
             <div class="tf-grid-layout gap30 lg-col-2">
                 {{-- get in touch --}}
-                <div class="tf-content-left">
-                    <h5 class="mb_20">Visit Our Store</h5>
+                    <h5 class="mb_20">Get in Touch</h5>
                     <div class="mb_20">
                         <p class="mb_15"><strong>Address</strong></p>
-                        <p>66 Mott St, New York, New York, Zip Code: 10006, AS</p>
-                    </div>
-                    <div class="mb_20">
-                        <p class="mb_15"><strong>Phone</strong></p>
-                        <p>(623) 934-2400</p>
+                        <p>Its Roop Ltd, UK</p>
                     </div>
                     <div class="mb_20">
                         <p class="mb_15"><strong>Email</strong></p>
-                        <p>EComposer@example.com</p>
-                    </div>
-                    <div class="mb_36">
-                        <p class="mb_15"><strong>Open Time</strong></p>
-                        <p class="mb_15">Our store has re-opened for shopping, </p>
-                        <p>exchange Every day 11am to 7pm</p>
+                        <p>info@itsroop.com</p>
                     </div>
                     <div>
-                        <ul class="tf-social-icon d-flex gap-20 style-default">
-                            <li><a href="#" class="box-icon link round social-facebook border-line-black"><i
-                                        class="icon fs-14 icon-fb"></i></a></li>
-                            <li><a href="#" class="box-icon link round social-twiter border-line-black"><i
-                                        class="icon fs-12 icon-Icon-x"></i></a></li>
-                            <li><a href="#" class="box-icon link round social-instagram border-line-black"><i
-                                        class="icon fs-14 icon-instagram"></i></a></li>
-                            <li><a href="#" class="box-icon link round social-tiktok border-line-black"><i
-                                        class="icon fs-14 icon-tiktok"></i></a></li>
-                            <li><a href="#" class="box-icon link round social-pinterest border-line-black"><i
-                                        class="icon fs-14 icon-pinterest-1"></i></a></li>
+                        <ul class="tf-social-icon d-flex gap-20 style-default contact-social">
+                            <li><a href="#" class="social-icon-bw"><i class="icon fs-14 icon-fb"></i></a></li>
+                            <li><a href="#" class="social-icon-bw"><i class="icon fs-12 icon-Icon-x"></i></a></li>
+                            <li><a href="#" class="social-icon-bw"><i class="icon fs-14 icon-instagram"></i></a></li>
+                            <li><a href="#" class="social-icon-bw"><i class="icon fs-14 icon-tiktok"></i></a></li>
+                            <li><a href="#" class="social-icon-bw"><i class="icon fs-14 icon-pinterest-1"></i></a></li>
                         </ul>
                     </div>
-                </div>
+                    <style>
+                        .social-icon-bw {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 34px;
+                            height: 34px;
+                            border-radius: 50%;
+                            border: 1px solid #000;
+                            color: #000;
+                            transition: all 0.3s ease;
+                        }
+                        .social-icon-bw:hover {
+                            background-color: #000;
+                            color: #fff;
+                        }
+                    </style>
                 {{-- get in touch --}}
 
                 {{-- contact form --}}

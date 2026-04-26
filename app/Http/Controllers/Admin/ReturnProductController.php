@@ -87,7 +87,7 @@ class ReturnProductController extends Controller
             })
 
             ->addColumn('return_price', function ($return_product) {
-                return toIndianCurrency($return_product->orderProduct->price * $return_product->return_quantity);
+                return toCurrency($return_product->orderProduct->price * $return_product->return_quantity, $return_product->order->currency_code);
             })
             ->addColumn('return_number', function ($return_product) {
                 return $return_product->return_number ?? '-';
@@ -285,6 +285,18 @@ class ReturnProductController extends Controller
                     'return_product_id' => $return_product->id,
                     'status' => 'RETURN_IN_PROGRESS',
                 ]);
+
+                // Send Email Notification
+                $emailData = [
+                    'subject' => 'Return Initiated - #' . $return_product->order->order_number,
+                    'order_number' => $return_product->order->order_number,
+                    'customer_name' => $return_product->order->user->full_name,
+                    'product_name' => $return_product->orderProduct->product->name,
+                    'quantity' => $return_product->return_quantity,
+                    'remark' => $return_product->remark,
+                ];
+
+                EmailService::sendEmail($return_product->order->user->email, 'emails.order-return', $emailData);
             }
         }
 

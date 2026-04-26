@@ -34,6 +34,8 @@ class User extends Authenticatable
         'device_id',
         'type',
         'is_registered',
+        'otp',
+        'otp_expires_at',
     ];
 
     protected $appends = [

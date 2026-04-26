@@ -9,10 +9,10 @@
                 <form action="{{ route('frontend.signin') }}" accept-charset="utf-8" id="loginForm">
                     @csrf
                     <div class="tf-field style-1">
-                        <input class="tf-field-input tf-input" placeholder=" " type="text" name="mobile"
-                            id="mobile">
-                        <label class="tf-field-label" for="">Mobile</label>
-                        <span id="mobileError" style="color:red"></span>
+                        <input class="tf-field-input tf-input" placeholder=" " type="email" name="email"
+                            id="email" required>
+                        <label class="tf-field-label" for="">Email</label>
+                        <span id="emailError" style="color:red"></span>
                     </div>
                     <div class="bottom">
                         <div class="w-100">

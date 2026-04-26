@@ -68,6 +68,10 @@ class HomeController extends Controller
     {
         return view('Frontend.Pages.faq');
     }
+    public function shipping()
+    {
+        return view('Frontend.Pages.shipping');
+    }
     public function productDetails()
     {
         return view('Frontend.Products.product-details');
@@ -143,6 +147,7 @@ class HomeController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
+            'product_request' => 'nullable|string',
         ], [
             'email.required' => 'Email is required',
             'email.email' => 'Email should be a valid email',
@@ -150,8 +155,15 @@ class HomeController extends Controller
 
         $subscriber = new Subscriber();
         $subscriber->email = $request->email;
+        $subscriber->product_details = $request->product_request;
+
+        if ($request->hasFile('product_image')) {
+            $path = $request->file('product_image')->store('product_requests', 'public');
+            $subscriber->product_image = $path;
+        }
+
         $subscriber->save();
 
-        return response()->json(['status' => 'success', 'message' => 'Thank you for subscribing!']);
+        return response()->json(['status' => 'success', 'message' => 'Your request has been submitted successfully!']);
     }
 }

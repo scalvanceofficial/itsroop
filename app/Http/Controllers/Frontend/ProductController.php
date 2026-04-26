@@ -21,11 +21,15 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $selected_category_slug = $request->category_slug ?? null;
+        // Detect gender from URL segment (men/women/unisex routes)
+        $gender_map = ['men' => 'Men', 'women' => 'Women', 'unisex' => 'Unisex'];
+        $slug       = $request->category_slug ?? request()->segment(2);
+        $selected_gender        = isset($gender_map[$slug]) ? $gender_map[$slug] : null;
+        $selected_category_slug = $selected_gender ? null : $slug;
         $category = null;
 
-        if ($request->category_slug) {
-            $category = Category::where('slug', $request->category_slug)->first();
+        if ($selected_category_slug) {
+            $category = Category::where('slug', $selected_category_slug)->first();
         }
 
         $product_categories = Category::where('status', 'ACTIVE')->orderBy('index', 'asc')->get();
@@ -42,6 +46,12 @@ class ProductController extends Controller
         $products = Product::where('status', 'ACTIVE')
             ->when($category, function ($query, $category) {
                 return $query->whereJsonContains('category_ids', (string) $category->id);
+            })
+            ->when($selected_gender, function ($query, $selected_gender) {
+                return $query->where(function ($q) use ($selected_gender) {
+                    $q->where('gender', $selected_gender)
+                      ->orWhere('gender', 'Unisex');
+                });
             })
             ->when($request->search, function ($query) use ($request) {
                 $search = strtolower(trim($request->search));
@@ -69,6 +79,7 @@ class ProductController extends Controller
             'properties',
             'product_categories',
             'selected_category_slug',
+            'selected_gender',
         ));
     }
 
@@ -100,7 +111,21 @@ class ProductController extends Controller
         ')
             ->first();
 
-        return view('Frontend.Products.product-details', compact('product', 'product_property_labels', 'product_review', 'product_images'));
+        $people_also_bought = Product::where('status', 'ACTIVE')
+            ->where('id', '!=', $product->id)
+            ->inRandomOrder()->take(4)->get();
+
+        $recently_viewed_ids = session()->get('recently_viewed', []);
+        $recently_viewed = Product::whereIn('id', $recently_viewed_ids)
+            ->where('id', '!=', $product->id)
+            ->take(4)->get();
+            
+        if (!in_array($product->id, $recently_viewed_ids)) {
+            array_unshift($recently_viewed_ids, $product->id);
+            session()->put('recently_viewed', array_slice($recently_viewed_ids, 0, 10));
+        }
+
+        return view('Frontend.Products.product-details', compact('product', 'product_property_labels', 'product_review', 'product_images', 'people_also_bought', 'recently_viewed'));
     }
 
     public function getProductImages(Request $request, Product $product)
@@ -127,19 +152,25 @@ class ProductController extends Controller
 
     public function getProductPrice(Request $request, Product $product)
     {
-        $property_value_ids = [];
-
-        if ($request->property_values) {
-            foreach ($request->property_values as $property_value) {
-                $property_value_ids[] = (int) $property_value['property_value_id'];
-            }
-        }
+        $property_value_id = (int) ($request->property_values[0]['property_value_id'] ?? 0);
 
         $product_price = ProductPrice::where('product_id', $product->id)
-            ->whereJsonContains('property_values', $property_value_ids)
+            ->whereJsonContains('property_values', $property_value_id)
             ->first();
 
-        return response()->json(['product_price' => $product_price], 200);
+        if (!$product_price) {
+             return response()->json(['error' => 'Price not found'], 404);
+        }
+
+        return response()->json([
+            'product_price' => [
+                'selling_price' => toCurrency($product_price->selling_price),
+                'actual_price'  => toCurrency($product_price->actual_price),
+                'selling_price_raw' => $product_price->selling_price,
+                'discount_percentage' => $product_price->discount_percentage,
+                'stock' => $product_price->stock,
+            ]
+        ], 200);
     }
 
     public function getFilteredProducts(Request $request)
@@ -159,9 +190,12 @@ class ProductController extends Controller
             $subCategories = SubCategory::where('status', 'ACTIVE')->get();
         }
 
-        // ✅ SEX FILTER (ADD THIS)
-        if ($request->sex) {
-            $productsQuery->where('sex', $request->sex);
+        // ✅ GENDER FILTER
+        if ($request->gender) {
+            $productsQuery->where(function ($q) use ($request) {
+                $q->where('gender', $request->gender)
+                  ->orWhere('gender', 'Unisex');
+            });
         }
 
         // ✅ PROPERTY VALUES FILTER
@@ -174,6 +208,19 @@ class ProductController extends Controller
                     ->whereIn('property_value_id', $property_values)
                     ->groupBy('product_id')
                     ->havingRaw('COUNT(DISTINCT property_value_id) = ?', [count($property_values)]);
+            });
+        }
+
+        // ✅ SEARCH FILTER
+        if ($request->search) {
+            $search = strtolower(trim($request->search));
+            $productsQuery->where(function ($q) use ($search) {
+                $q->orWhereRaw('MATCH(name, keywords) AGAINST(? IN NATURAL LANGUAGE MODE)', [$search])
+                    ->orWhere('name', 'LIKE', "%$search%")
+                    ->orWhere('keywords', 'LIKE', "%$search%");
+                $q->orWhereHas('productPrices', function ($subQ) use ($search) {
+                    $subQ->where('model', 'LIKE', "%$search%");
+                });
             });
         }
 
@@ -289,8 +336,13 @@ class ProductController extends Controller
             ], 400);
         }
 
+        $currencyCode = session('currency', 'GBP');
+        if ($coupon->currency_code !== $currencyCode) {
+            return response()->json(['error' => 'This coupon is not valid for ' . $currencyCode], 400);
+        }
+
         if ($totalAmount < $coupon->minimum_order_amount) {
-            return response()->json(['error' => 'Minimum order value should be ₹' . $coupon->minimum_order_amount], 400);
+            return response()->json(['error' => 'Minimum order value should be ' . formatCurrency($coupon->minimum_order_amount, $coupon->currency_code)], 400);
         }
 
         $discountPercentage = $coupon->percentage ?? 0;
@@ -305,5 +357,28 @@ class ProductController extends Controller
             'discount_percentage' => $discountPercentage,
             'discount_amount' => $discountAmount,
         ]);
+    }
+
+    public function searchRecommendations(Request $request)
+    {
+        $search = strtolower(trim($request->q));
+
+        if (empty($search)) {
+            return '';
+        }
+
+        $products = Product::where('status', 'ACTIVE')
+            ->where(function ($q) use ($search) {
+                $q->orWhereRaw('MATCH(name, keywords) AGAINST(? IN NATURAL LANGUAGE MODE)', [$search])
+                    ->orWhere('name', 'LIKE', "%$search%")
+                    ->orWhere('keywords', 'LIKE', "%$search%");
+                $q->orWhereHas('productPrices', function ($subQ) use ($search) {
+                    $subQ->where('model', 'LIKE', "%$search%");
+                });
+            })
+            ->limit(8)
+            ->get();
+
+        return view('Frontend.Products.recommendations', compact('products'));
     }
 }

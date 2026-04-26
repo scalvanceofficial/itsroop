@@ -330,6 +330,7 @@ class PermissionSeeder extends Seeder
                     'edit',
                     'update',
                     'changeStatus',
+                    'updateTracking',
                 ],
             ]
         ],
@@ -644,8 +645,8 @@ class PermissionSeeder extends Seeder
                 'SuperAdmin',
             ],
             'mobile'  => '9999999999',
-            'email'  => 'super@technicul.com',
-            'password' => 'super@123@technicul'
+            'email'  => 'super@itsroop.com',
+            'password' => 'super@123@itsroop'
         ],
     ];
 

@@ -33,7 +33,7 @@
                             <div class="col-sm-12 {{ Route::is('admin.sliders.create') ? 'col-md-6' : 'col-md-4' }}">
                                 <label class="control-label col-form-label">Desktop Image
                                     <sup class="text-danger">
-                                        * (Size 2000 W * 1125 H | aspect ratio:71∶25)
+                                        * (Any size image can be uploaded; it will be automatically fitted on the frontend)
                                     </sup>
                                 </label>
                                 <fieldset class="form-group mb-2">
@@ -51,28 +51,6 @@
                                     </a>
                                 </div>
                             @endif
-                            <div class="col-sm-12 {{ Route::is('admin.sliders.create') ? 'col-md-6' : 'col-md-4' }}">
-                                <label class="control-label col-form-label">Mobile Image
-                                    <sup class="text-danger">
-                                        * (size: 1080 W × 1920 H | aspect ratio: 9:16)
-                                    </sup>
-                                </label>
-                                <fieldset class="form-group mb-2">
-                                    <input type="file" name="mobile_image" class="form-control" id="slider-mobile-image"
-                                        placeholder="Please select mobile image"
-                                        accept="image/png, image/jpeg, image/jpg,image/webp">
-                                    <div id="mobile_image-error" style="color:red"></div>
-                                </fieldset>
-                            </div>
-                            @if (isset($slider->mobile_image))
-                                <div class="col-sm-12 col-md-2 mt-3">
-                                    <a href="{{ asset(Storage::url($slider->mobile_image)) }}" target="_blank">
-                                        <img src="{{ asset(Storage::url($slider->mobile_image)) }}" width="150"
-                                            height="150" class="img-rounded img-thumbnail">
-                                    </a>
-                                </div>
-                            @endif
-
                         </div>
                     </div>
                     <div class="card-footer">
@@ -142,13 +120,15 @@
                         timeOut: 1500,
                         closeButton: true,
                     });
-                    $.each(xhr.responseJSON.errors, function(key, value) {
-                        $('#' + key + '-error').html(value);
-                    });
-                    $('html, body').animate({
-                        scrollTop: $('#' + Object.keys(xhr.responseJSON.errors)[0] + '-error')
-                            .offset().top - 200
-                    }, 500);
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        $.each(xhr.responseJSON.errors, function(key, value) {
+                            $('#' + key + '-error').html(value);
+                        });
+                        $('html, body').animate({
+                            scrollTop: $('#' + Object.keys(xhr.responseJSON.errors)[0] + '-error')
+                                .offset().top - 200
+                        }, 500);
+                    }
                 }
             });
         });

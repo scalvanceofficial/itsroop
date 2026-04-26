@@ -533,6 +533,7 @@ class ProductController extends Controller
         // 'hsn' => 'required|string|max:50',
         'highlights' => 'required|string',
         'description' => 'required|string',
+        'gender' => 'nullable|in:Men,Women,Unisex',
         'video_type' => 'nullable|in:video,youtube_link,remove_type',
         'video' => 'required_if:video_type,video|file|mimes:mp4',
         'youtube_link' => 'required_if:video_type,youtube_link',

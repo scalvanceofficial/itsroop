@@ -51,13 +51,13 @@
             <div class="tf-product-info-price">
                 <div class="price-on-sale text_black" style="font-size:14px; font-weight: 600;">
                     @if ($product_price)
-                        {{ toIndianCurrency($product_price->selling_price) }}
+                        {{ toCurrency($product_price->selling_price) }}
                     @endif
                 </div>
 
                 @if ($product_price && ($product_price->discount_percentage > 0 || $product_price->discount_price > 0))
                     <div class="compare-at-price" style="font-size:14px; font-weight: 600;">
-                        {{ toIndianCurrency($product_price->actual_price) }}
+                        {{ toCurrency($product_price->actual_price) }}
                     </div>
                     <div class="discount-percentage">
                         <span>{{ round($product_price->discount_percentage) }}</span>% OFF

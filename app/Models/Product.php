@@ -39,6 +39,7 @@ class Product extends BaseModel
         'index',
         'featured',
         'status',
+        'gender',
         'video_type',
         'video',
         'youtube_link',

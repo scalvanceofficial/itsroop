@@ -15,14 +15,14 @@
                     <div class="swiper-slide">
                         <div class="wrap-slider">
 
-                            <img src="{{ Storage::url($slider->image) }}" alt="slider-image">
+                            <img src="{{ Storage::url($slider->image) }}" alt="slider-image"
+                                style="width: 100%; height: 600px; object-fit: cover; object-position: center;">
 
                             <div class="box-content">
                                 <div class="container">
 
-                                    <h1 class="fade-item fade-item-1">
-                                        {{ implode(' ', array_slice(explode(' ', $slider->title), 0, 2)) }} <br>
-                                        {{ implode(' ', array_slice(explode(' ', $slider->title), 2)) }}
+                                    <h1 class="fade-item fade-item-1 slider-title">
+                                        {{ $slider->title }}
                                     </h1>
 
 
@@ -47,8 +47,6 @@
             </div>
         </div>
     </div>
-
-
 
     <!-- /Slider -->
 
@@ -305,13 +303,13 @@
 
                                 <span class="price">
                                     @if ($product_price)
-                                        {{ toIndianCurrency($product_price->selling_price) }}
+                                        {{ toCurrency($product_price->selling_price) }}
                                     @endif
                                 </span>
 
                                 @if ($product_price && $product_price->actual_price > $product_price->selling_price)
                                     <span class="compare-at-price" style="text-decoration: line-through; color:#777;">
-                                        {{ toIndianCurrency($product_price->actual_price) }}
+                                        {{ toCurrency($product_price->actual_price) }}
                                     </span>
                                 @endif
 
@@ -386,7 +384,7 @@
                                                     <div class="product-title">
                                                         <a href="#">Jersey thong body</a>
                                                     </div>
-                                                    <div class="price">$112.00</div>
+                                                    <div class="price">{{ toCurrency(112.0) }}</div>
                                                 </div>
                                                 <a href="#quick_view" data-bs-toggle="modal" class=""><i
                                                         class="icon-view"></i></a>
@@ -414,7 +412,7 @@
                                                     <div class="product-title">
                                                         <a href="#">Ribbed modal T-shirt</a>
                                                     </div>
-                                                    <div class="price">$20.00</div>
+                                                    <div class="price">{{ toCurrency(20.0) }}</div>
                                                 </div>
                                                 <a href="#quick_view" data-bs-toggle="modal" class=""><i
                                                         class="icon-view"></i></a>
@@ -450,7 +448,7 @@
                                                     <div class="product-title">
                                                         <a href="#">Ribbed Tank Top</a>
                                                     </div>
-                                                    <div class="price">$20.00</div>
+                                                    <div class="price">{{ toCurrency(20.0) }}</div>
                                                 </div>
                                                 <a href="#quick_view" data-bs-toggle="modal" class=""><i
                                                         class="icon-view"></i></a>
@@ -661,14 +659,14 @@
                                                         <div class="price-on-sale text_black"
                                                             style="font-size:14px; font-weight: 600;">
                                                             @if ($product_price)
-                                                                {{ toIndianCurrency($product_price->selling_price) }}
+                                                                {{ toCurrency($product_price->selling_price) }}
                                                             @endif
                                                         </div>
 
                                                         <div class="compare-at-price"
                                                             style="font-size:14px; font-weight: 600;">
                                                             @if ($product_price)
-                                                                {{ toIndianCurrency($product_price->actual_price) }}
+                                                                {{ toCurrency($product_price->actual_price) }}
                                                             @endif
                                                         </div>
                                                     </div>
@@ -761,4 +759,94 @@
             </div>
         </div>
     </section>
+
+    <!-- Icon Cards Section -->
+    <section class="flat-spacing-5 pt_0">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-6 col-6">
+                    <div class="tf-icon-box style-bordred text-center wow fadeInUp" data-wow-delay="0s">
+                        <div class="icon">
+                            <i class="icon-shipping"></i>
+                        </div>
+                        <div class="content">
+                            <h6>Free Shipping</h6>
+                            <p>Free shipping over order {{ toCurrency(100) }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 col-6">
+                    <div class="tf-icon-box style-bordred text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="icon">
+                            <i class="icon-card"></i>
+                        </div>
+                        <div class="content">
+                            <h6>Flexible Payment</h6>
+                            <p>Pay with Multiple Credit Cards</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 col-6">
+                    <div class="tf-icon-box style-bordred text-center wow fadeInUp" data-wow-delay="0.2s">
+                        <div class="icon">
+                            <i class="icon-return"></i>
+                        </div>
+                        <div class="content">
+                            <h6>14 Day Returns</h6>
+                            <p>Within 30 days for an exchange</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 col-6">
+                    <div class="tf-icon-box style-bordred text-center wow fadeInUp" data-wow-delay="0.3s">
+                        <div class="icon">
+                            <i class="icon-premium-support"></i>
+                        </div>
+                        <div class="content">
+                            <h6>Premium Support</h6>
+                            <p>Outstanding premium support</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .tf-icon-box.style-bordred {
+            border: 1px solid #e5e5e5;
+            padding: 40px 20px;
+            border-radius: 10px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .tf-icon-box.style-bordred:hover {
+            border-color: #000;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .tf-icon-box .icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: #000;
+        }
+
+        .tf-icon-box h6 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .tf-icon-box p {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 0;
+        }
+    </style>
 @endsection

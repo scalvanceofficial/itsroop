@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>New Contact Enquiry – Bamboo Street</title>
+  <title>New Contact Enquiry – Itsroop</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -61,7 +61,7 @@
 
     <p>Hello Team,</p>
 
-    <p>A new contact enquiry has been submitted on <strong>Bamboo Street</strong>. Please find the details below:</p>
+    <p>A new contact enquiry has been submitted on <strong>Itsroop</strong>. Please find the details below:</p>
 
     <table>
       <tr>

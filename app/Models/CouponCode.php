@@ -15,5 +15,6 @@ class CouponCode extends BaseModel
         'end_date',
         'percentage',
         'minimum_order_amount',
+        'currency_code',
     ];
 }

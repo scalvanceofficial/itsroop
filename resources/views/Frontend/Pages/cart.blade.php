@@ -51,7 +51,7 @@
                                                 </div>
                                             </td>
                                             <td class="tf-cart-item_price tf-variant-item-price" cart-data-title="Price">
-                                                <div class="cart-price price">{{ toIndianCurrency($cart_data['price']) }}
+                                                <div class="cart-price price">{{ toCurrency($cart_data['price']) }}
                                                 </div>
                                             </td>
                                             <td class="tf-cart-item_quantity" cart-data-title="Quantity">
@@ -85,7 +85,7 @@
                                             </td>
                                             <td class="tf-cart-item_total tf-variant-item-total" cart-data-title="Total">
                                                 <div class="cart-total price">
-                                                    {{ toIndianCurrency($cart_data['price'] * $cart->quantity) }}
+                                                    {{ toCurrency($cart_data['price'] * $cart->quantity) }}
                                                 </div>
                                             </td>
                                             <td class="tf-cart-item_remove tf-variant-item-remove d-flex align-items-center"
@@ -189,7 +189,7 @@
                                 </div> --}}
                                 <div class="tf-cart-totals-discounts">
                                     <h3>Subtotal</h3>
-                                    <span class="total-value" id="subTotal">{{ toIndianCurrency($sub_total) }}</span>
+                                    <span class="total-value" id="subTotal">{{ toCurrency($sub_total) }}</span>
                                 </div>
                                 {{-- <p class="tf-cart-tax">
                                     Taxes and shipping calculated at checkout

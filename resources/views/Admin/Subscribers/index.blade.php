@@ -28,6 +28,12 @@
                                         <th>
                                             <h6 class="fs-3 fw-semibold mb-0">E-Mail</h6>
                                         </th>
+                                        <th>
+                                            <h6 class="fs-3 fw-semibold mb-0">Message/Details</h6>
+                                        </th>
+                                        <th>
+                                            <h6 class="fs-3 fw-semibold mb-0">Product Image</h6>
+                                        </th>
                                     </tr>
                                 </thead>
                             </table>
@@ -64,6 +70,16 @@
                     {
                         data: 'email',
                         name: 'subscribers.email'
+                    },
+                    {
+                        data: 'product_details',
+                        name: 'subscribers.product_details'
+                    },
+                    {
+                        data: 'product_image',
+                        name: 'subscribers.product_image',
+                        orderable: false,
+                        searchable: false
                     },
                 ],
 

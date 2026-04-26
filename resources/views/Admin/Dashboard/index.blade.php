@@ -258,7 +258,22 @@
     </div>
   </div>
 
-
+  <div class="row">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title fw-semibold text-primary mb-3">Currency Statistics</h4>
+                <div class="row" id="currency_distribution_row">
+                    <!-- Currency cards will be appended here via JS -->
+                </div>
+                <div class="mt-3">
+                    <span class="fw-semibold">Most Used Currency: </span>
+                    <span id="most_used_currency" class="badge bg-primary fs-3"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
 
   <div class="row">
     <div class="col-6 d-flex align-items-strech">
@@ -397,6 +412,24 @@
             $('#total_delivered_order_amount').html(data.data.total_delivered_order_amount);
             $('#total_cancelled_order_amount').html(data.data.total_cancelled_order_amount);
             $('#total_other_order_amount').html(data.data.total_other_order_amount);
+
+            // Populate currency distribution
+            $('#most_used_currency').html(data.data.most_used_currency);
+            let currencyHtml = '';
+            data.data.currency_distribution.forEach(function(item) {
+                currencyHtml += `
+                    <div class="col-md-3">
+                        <div class="card border">
+                            <div class="card-body p-2 text-center">
+                                <h6 class="fw-semibold mb-1">${item.code}</h6>
+                                <div class="text-muted small">Orders: ${item.count}</div>
+                                <div class="fw-bold text-success">${item.total}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            $('#currency_distribution_row').html(currencyHtml);
           }
         },
         error: function(data) {

@@ -270,7 +270,7 @@
             </li>
         @endcan
 
-        @can('credential-view')
+        <!-- @can('credential-view')
             <li class="sidebar-item">
                 <a class="sidebar-link @if (Route::is('admin.credentials.*')) active @endif"
                     href="{{ route('admin.credentials.index') }}" aria-expanded="false">
@@ -280,7 +280,7 @@
                     <span class="hide-menu">Credentials</span>
                 </a>
             </li>
-        @endcan
+        @endcan -->
 
 
         @can('enquiries-view')

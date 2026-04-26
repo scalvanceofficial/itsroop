@@ -1,4 +1,4 @@
-<div class="wrap-sidebar-account">
+<div class="wrap-sidebar-account d-block mb-4 pt-3">
     <ul class="my-account-nav">
         <li><a href="/orders" class="my-account-nav-item">Orders</a></li>
         <li><a href="/profile" class="my-account-nav-item">Account Details</a></li>

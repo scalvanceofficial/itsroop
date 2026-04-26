@@ -45,9 +45,14 @@ Route::prefix('export')->group(function () {
 });
 
 
+Route::prefix('admin')->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('admin.dashboard.index');
+    });
+});
+
 Route::middleware(['auth', 'admin', 'preventBackHistory'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
-
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::post('dashboard/data', [DashboardController::class, 'getData'])->name('dashboard.data');
         Route::post('dashboard/wishlist-products', [DashboardController::class, 'getWishlistProduct'])->name('dashboard.wishlist-products');
@@ -152,6 +157,7 @@ Route::middleware(['auth', 'admin', 'preventBackHistory'])->group(function () {
         //Orders
         Route::resource('orders', OrderController::class);
         Route::post('orders/data', [OrderController::class, 'data'])->name('orders.data');
+        Route::post('orders/update-tracking', [OrderController::class, 'updateTracking'])->name('orders.update.tracking');
         Route::post('order/cancel', [OrderController::class, 'adminCancelOrder'])->name('order.cancel');
         Route::post('restore/order', [OrderController::class, 'restoreOrder'])->name('restore.order');
         Route::get('orders/{order}/pdf', [OrderController::class, 'pdf'])->name('orders.pdf.download');
@@ -210,5 +216,10 @@ Route::middleware(['auth', 'admin', 'preventBackHistory'])->group(function () {
         // visitorlogs
         Route::resource('visitorlog', VisitorLogController::class);
         Route::post('visitorlog/data', [VisitorLogController::class, 'data'])->name('visitorlog.data');
+
+        // currencies
+        Route::resource('currencies', \App\Http\Controllers\Admin\CurrencyController::class);
+        Route::post('currencies/data', [\App\Http\Controllers\Admin\CurrencyController::class, 'data'])->name('currencies.data');
+        Route::post('currencies/change-status', [\App\Http\Controllers\Admin\CurrencyController::class, 'changeStatus'])->name('currencies.change.status');
     });
 });

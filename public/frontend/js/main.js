@@ -514,35 +514,15 @@
   /* header sticky
   -------------------------------------------------------------------------*/
   var headerSticky = function () {
-    let lastScrollTop = 0;
-    let delta = 5;
-    let navbarHeight = $("header").outerHeight();
-    let didScroll = false;
-
     $(window).scroll(function () {
-      didScroll = true;
-    });
-
-    setInterval(function () {
-      if (didScroll) {
-        let st = $(window).scrollTop();
-        navbarHeight = $("header").outerHeight();
-
-        if (st > navbarHeight) {
-          if (st > lastScrollTop + delta) {
-            $("header").css("top", `-${navbarHeight}px`);
-          } else if (st < lastScrollTop - delta) {
-            $("header").css("top", "0");
-            $("header").addClass("header-bg");
-          }
+        if ($(window).scrollTop() > 50) {
+            $("header").addClass("header-fixed-override");
+            $('body').css('padding-top', $("header").outerHeight() + 'px');
         } else {
-          $("header").css("top", "unset");
-          $("header").removeClass("header-bg");
+            $("header").removeClass("header-fixed-override");
+            $('body').css('padding-top', '0');
         }
-        lastScrollTop = st;
-        didScroll = false;
-      }
-    }, 250);
+    });
   };
 
   /* bottom sticky
@@ -564,7 +544,7 @@
  -------------------------------------------------------------------------*/
   var totalPriceVariant = function () {
 
-    var basePrice = parseFloat($(".price-on-sale").data("base-price")) || parseFloat($(".price-on-sale").text().replace("₹", ""));
+    var basePrice = parseFloat($(".price-on-sale").data("base-price")) || parseFloat($(".price-on-sale").text().replace(window.currencyConfig.symbol, ""));
     var quantityInput = $(".quantity-product");
     // quantityInput.on("keydown keypress input", function(event) {
     //   event.preventDefault();
@@ -572,9 +552,9 @@
     $(".color-btn, .size-btn").on("click", function () {
       var newPrice = parseFloat($(this).data("price")) || basePrice;
       quantityInput.val(1);
-      $(".price-on-sale").text("₹" + newPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+      $(".price-on-sale").text(window.currencyConfig.symbol + newPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
       var totalPrice = newPrice;
-      $(".total-price").text("₹" + totalPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+      $(".total-price").text(window.currencyConfig.symbol + totalPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
     });
 
     $(".btn-increase").on("click", function () {
@@ -592,10 +572,10 @@
     });
 
     function updateTotalPrice() {
-      var currentPrice = parseFloat($(".price-on-sale").text().replace("₹", ""));
+      var currentPrice = parseFloat($(".price-on-sale").text().replace(window.currencyConfig.symbol, ""));
       var quantity = parseInt(quantityInput.val());
       var totalPrice = currentPrice * quantity;
-      $(".total-price").text("₹" + totalPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+      $(".total-price").text(window.currencyConfig.symbol + totalPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
     }
 
   };

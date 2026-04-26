@@ -18,8 +18,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
         Route::get('orders/{order}/pdf', [OrderController::class, 'pdf'])->name('orders.pdf.download');
         Route::get('/checkout', [OrderController::class, 'checkout'])->name('orders.checkout');
-        Route::post('/razorpay/initiate', [OrderController::class, 'initiatePayment'])->name('orders.razorpay-initiate');
-        Route::post('/razorpay/verify', [OrderController::class, 'verifyPayment'])->name('orders.razorpay-verify');
+        Route::post('/stripe/initiate', [OrderController::class, 'initiatePayment'])->name('orders.stripe-initiate');
+        Route::get('/stripe/success', [OrderController::class, 'stripeSuccess'])->name('orders.stripe-success');
+        Route::get('/stripe/cancel', [OrderController::class, 'stripeCancel'])->name('orders.stripe-cancel');
 
         //Cart
         Route::get('/cart', [CartController::class, 'index'])->name('cart');
@@ -56,13 +57,18 @@ Route::name('frontend.')->group(function () {
     Route::get('/return-and-exchange', [HomeController::class, 'returnExchange'])->name('return-and-exchange');
     Route::get('/terms-and-conditions', [HomeController::class, 'termsAndConditions'])->name('terms-and-conditions');
     Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
+    Route::get('/shipping', [HomeController::class, 'shipping'])->name('shipping');
 
+    Route::get('/products/men',     [ProductController::class, 'index'])->name('products.men');
+    Route::get('/products/women',   [ProductController::class, 'index'])->name('products.women');
+    Route::get('/products/unisex',  [ProductController::class, 'index'])->name('products.unisex');
     Route::get('/products/{category_slug?}', [ProductController::class, 'index'])->name('products');
     Route::get('/products/{slug}/details', [ProductController::class, 'productDetails'])->name('products.product-details');
     Route::post('/products/{product}/images', [ProductController::class, 'getProductImages'])->name('products.images');
     Route::post('/products/{product}/price', [ProductController::class, 'getProductPrice'])->name('products.price');
     Route::post('/products/{product}/price', [ProductController::class, 'getProductPrice'])->name('products.price');
     Route::post('/products/filters', [ProductController::class, 'getFilteredProducts'])->name('products.filters');
+    Route::get('/search-recommendations', [ProductController::class, 'searchRecommendations'])->name('products.search-recommendations');
     Route::post('/product/apply-coupon', [ProductController::class, 'applyCouponCode'])->name('apply.coupon.code');
 
     // Auth
@@ -86,4 +92,15 @@ Route::name('frontend.')->group(function () {
     Route::post('/enquiry/store', [EnquiryController::class, 'storeEnquiry'])->name('enquiry.store');
 
     Route::post('/subscribe-enquiry', [HomeController::class, 'subscribeEnquiry'])->name('subscribe-enquiry');
+    Route::post('/change-currency', [HomeController::class, 'changeCurrency'])->name('change-currency');
+
+    // Currency switcher
+    Route::post('/set-currency', function (\Illuminate\Http\Request $request) {
+        $currency = $request->input('currency', 'GBP');
+        $exists = \App\Models\Currency::where('code', $currency)->where('is_active', true)->exists();
+        if ($exists) {
+            session(['currency' => $currency]);
+        }
+        return redirect()->back();
+    })->name('set-currency');
 });

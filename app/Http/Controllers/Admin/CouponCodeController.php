@@ -39,7 +39,7 @@ class CouponCodeController extends Controller
                 return $couponcode->percentage . '%';
             })
             ->editColumn('minimum_order_amount', function ($couponcode) {
-                return toIndianCurrency($couponcode->minimum_order_amount);
+                return formatCurrency($couponcode->minimum_order_amount, $couponcode->currency_code);
             })
             ->editColumn('status', function ($couponcode) {
                 if ($couponcode->status == 'ACTIVE') {
@@ -165,6 +165,7 @@ class CouponCodeController extends Controller
         'coupon_code' => 'required|string',
         'percentage' => 'required|numeric',
         'minimum_order_amount' => 'required|numeric',
+        'currency_code' => 'required|string|exists:currencies,code',
     ];
 
     private $customMessages = [
@@ -178,5 +179,6 @@ class CouponCodeController extends Controller
         'percentage.numeric' => 'Percentage must be a number',
         'minimum_order_amount.required' => 'Max Amount is required',
         'minimum_order_amount.numeric' => 'Max Amount must be a number',
+        'currency_code.required' => 'Currency is required',
     ];
 }

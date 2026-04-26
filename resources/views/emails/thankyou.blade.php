@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Thank You – Bamboo Street</title>
+  <title>Thank You – Itsroop</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -50,20 +50,20 @@
 
 <body>
   <div class="container">
-    <h4>🌿 Thank You, {{ $data['name'] }}!</h4>
+    <h4>Thank You, {{ $data['name'] }}!</h4>
 
     <p>We’ve received your enquiry and our team is already on it! 🙌</p>
 
-    <p>A Bamboo Street representative will connect with you shortly to assist with your query.</p>
+    <p>A Itsroop representative will connect with you shortly to assist with your query.</p>
 
-    <p>In the meantime, feel free to explore more of our eco-friendly products designed to support your sustainable lifestyle.</p>
+    <p>In the meantime, feel free to explore more of our products.</p>
 
-    <a href="{{ url('/') }}" class="button">Explore Bamboo Street</a>
+    <a href="{{ url('/') }}" class="button">Explore Itsroop</a>
 
     <div class="footer">
       <p>Thanks again for reaching out to us!<br>
         Warm regards,<br>
-        <strong>The Bamboo Street Team</strong>
+        <strong>The Itsroop Team</strong>
       </p>
     </div>
   </div>

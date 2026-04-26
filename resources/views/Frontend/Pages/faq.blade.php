@@ -17,141 +17,57 @@
                     <h5 class="mb_24">Shopping Information</h5>
                     <div class="flat-accordion style-default has-btns-arrow mb_60">
                         <div class="flat-toggle active">
-                            <div class="toggle-title active">Pellentesque habitant morbi tristique senectus et netus?</div>
+                            <div class="toggle-title active">What are your shipping options and times?</div>
                             <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                <p>We offer Standard Delivery (2-3 business days) which is FREE for orders over £150 or £4.95 otherwise. We also offer Overnight Delivery (£14.95) and Nominated Day Delivery (£9.95).</p>
                             </div>
                         </div>
                         <div class="flat-toggle">
-                            <div class="toggle-title">How much is shipping and how long will it take?</div>
+                            <div class="toggle-title">Do you offer international shipping?</div>
                             <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                <p>Currently, our specified rates and free shipping offers are focused on the UK. For international inquiries, please contact us at info@itsroop.com.</p>
                             </div>
                         </div>
                         <div class="flat-toggle">
-                            <div class="toggle-title">How long will it take to get my package?</div>
+                            <div class="toggle-title">Are your products authentic?</div>
                             <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                            </div>
-                        </div>
-                        <div class="flat-toggle">
-                            <div class="toggle-title">Branding is simply a more efficient way to sell things?</div>
-                            <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                <p>Yes, all items sold are 100% authentic, sourced directly from trusted suppliers and luxury resellers.</p>
                             </div>
                         </div>
                     </div>
                     <h5 class="mb_24">Payment Information</h5>
                     <div class="flat-accordion style-default has-btns-arrow mb_60">
                         <div class="flat-toggle">
-                            <div class="toggle-title">Pellentesque habitant morbi tristique senectus et netus?</div>
+                            <div class="toggle-title">What payment methods do you accept?</div>
                             <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                <p>We accept secure payments through SumUp, including VISA, Mastercard, Maestro, American Express, and more.</p>
                             </div>
                         </div>
                         <div class="flat-toggle">
-                            <div class="toggle-title">How much is shipping and how long will it take?</div>
+                            <div class="toggle-title">Is my payment information secure?</div>
                             <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                            </div>
-                        </div>
-                        <div class="flat-toggle">
-                            <div class="toggle-title">How long will it take to get my package?</div>
-                            <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                            </div>
-                        </div>
-                        <div class="flat-toggle">
-                            <div class="toggle-title">Branding is simply a more efficient way to sell things?</div>
-                            <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                <p>Yes, we use encrypted payment processing and a secure SSL website. We do NOT store your full card information.</p>
                             </div>
                         </div>
                     </div>
                     <h5 class="mb_24">Order Returns</h5>
                     <div class="flat-accordion style-default has-btns-arrow">
                         <div class="flat-toggle">
-                            <div class="toggle-title">Pellentesque habitant morbi tristique senectus et netus?</div>
+                            <div class="toggle-title">What is your return policy?</div>
                             <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                <p>We offer a free-of-charge 7-day return policy within the UK. Items must be unused, in original packaging, with tags intact.</p>
                             </div>
                         </div>
                         <div class="flat-toggle">
-                            <div class="toggle-title">How much is shipping and how long will it take?</div>
+                            <div class="toggle-title">How do I start a return?</div>
                             <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                <p>To initiate a return, email us at info@itsroop.com with your order number and reason for return. We will provide a prepaid return label.</p>
                             </div>
                         </div>
                         <div class="flat-toggle">
-                            <div class="toggle-title">How long will it take to get my package?</div>
+                            <div class="toggle-title">When will I receive my refund?</div>
                             <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                            </div>
-                        </div>
-                        <div class="flat-toggle">
-                            <div class="toggle-title">Branding is simply a more efficient way to sell things?</div>
-                            <div class="toggle-content">
-                                <p>The perfect way to enjoy brewing tea on low hanging fruit to identify. Duis autem vel eum
-                                    iriure dolor in hendrerit vulputate velit esse molestie consequat, vel illum dolore eu
-                                    feugiat nulla facilisis. For me, the most important part of improving at photography has
-                                    been sharing it. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                <p>Refunds are typically processed to your original payment method within 3–7 working days after we receive and inspect the returned item.</p>
                             </div>
                         </div>
                     </div>

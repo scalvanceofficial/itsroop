@@ -56,7 +56,8 @@ class OrderController extends Controller
                 return '<span class="badge bg-success fs-1">' . $order->payment_status . '</span>';
             })
             ->editColumn('shiprocket_status', function ($order) {
-                return  $order->shiprocket_status;
+                $displayStatus = $order->status ? $order->status : ($order->shiprocket_status ?: 'NEW');
+                return '<a href="#" class="text-primary fw-bold tracking-update-order-btn" data-id="' . $order->id . '" data-status="' . $order->status . '" data-courier="' . $order->courier_name . '" data-tracking="' . $order->tracking_number . '" data-url="' . $order->tracking_url . '" data-date="' . $order->estimated_delivery_date . '">' . strtoupper($displayStatus) . '</a>';
             })
             ->editColumn('address', function ($order) {
                 return $order->address->address_line_1 . ',' . $order->address->address_line_2 . ',' . $order->address->city . ',' . $order->address->pincode;
@@ -73,11 +74,11 @@ class OrderController extends Controller
                     $refund_amount += $returnedQty * ($order_product->price ?? 0);
                 }
 
-                $original = '<span class="badge bg-success fs-1 me-1">Total: ' . toIndianCurrency($order->total_amount) . '</span>';
+                $original = '<span class="badge bg-success fs-1 me-1">Total: ' . toCurrency($order->total_amount, $order->currency_code) . '</span>';
                 $refund = '';
 
                 if ($refund_amount > 0) {
-                    $refund = '<span class="badge bg-danger fs-1">Refund: ' . toIndianCurrency($refund_amount) . '</span>';
+                    $refund = '<span class="badge bg-danger fs-1">Refund: ' . toCurrency($refund_amount, $order->currency_code) . '</span>';
                 }
 
                 return $original . $refund;
@@ -102,7 +103,7 @@ class OrderController extends Controller
                     $html .= '<li class="d-flex justify-content-between align-items-center mt-2">';
                     $html .= '<span role="button" tabindex="0" class="product-detail-btn" style="cursor:pointer;" 
                     data-name="' . e($product->name) . '" 
-                    data-price="' . e(toIndianCurrency($productPrice->selling_price)) . '"
+                    data-price="' . e(toCurrency($productPrice->selling_price, $order->currency_code)) . '"
                     data-variants="' . e($order_product->property_value_names) . '" 
                     data-model="' . e($productPrice->model) . '" 
                     data-bs-toggle="modal" 
@@ -126,24 +127,24 @@ class OrderController extends Controller
             ->addColumn('order_number', function ($order) {
                 return $order->order_number;
             })
-            ->addColumn('awb_code', function ($order) {
-                return $order->awb_code;
+            ->addColumn('tracking_number', function ($order) {
+                return $order->tracking_number;
             })
 
             ->addColumn('shiprocket', function ($order) {
-                if (!$order->shiprocket_order_id && $order->shiprocket_status != 'Cancelled' && $order->shiprocket_status != 'Delivered') {
-                    return '<a href="#" class="btn btn-sm btn-primary fs-1 shiprocket-create-order-btn" data-id=' . $order->id . '>Create</a>';
-                } else if ($order->shiprocket_status == 'Cancelled') {
+                if (!$order->tracking_number && strtolower($order->shiprocket_status) != 'cancelled' && strtolower($order->shiprocket_status) != 'delivered') {
+                    return '<a href="#" class="btn btn-sm btn-dark px-3 fs-1 shiprocket-create-order-btn" data-id="' . $order->id . '" data-status="' . ($order->status ?: 'Pending') . '" data-date="' . $order->estimated_delivery_date . '">Create</a>';
+                } else if (strtolower($order->shiprocket_status) == 'cancelled') {
                     return '<span class="badge bg-danger fs-1">Cancelled</span>';
                 } else if ($order->shiprocket_status == 'Delivered') {
                     return '<span class="badge bg-success fs-1">Delivered</span>';
                 } else {
                     $track = '';
-                    if ($order->shiprocket_tracking_response) {
+                    if ($order->shiprocket_tracking_response || $order->trackingHistories()->count() > 0) {
                         $track = '<a href="#" class="btn btn-sm btn-primary fs-1 shiprocket-track-order-btn" data-id=' . $order->id . '>Track</a>';
                     }
                     $cancel = '<a href="#" class="btn btn-sm btn-danger fs-1 shiprocket-cancel-order-btn" data-id=' . $order->id . '>Cancel</a>';
-                    $update = '<a href="#" class="btn btn-sm btn-warning fs-1 shiprocket-update-order-btn" data-id="' . $order->id . '">Update</a>';
+                    $update = '<a href="#" class="btn btn-sm btn-warning fs-1 tracking-update-order-btn" data-id="' . $order->id . '" data-status="' . $order->status . '" data-courier="' . $order->courier_name . '" data-tracking="' . $order->tracking_number . '" data-url="' . $order->tracking_url . '" data-date="' . $order->estimated_delivery_date . '">Update</a>';
 
                     return $track . ' ' . $cancel . ' ' . $update;
                 }
@@ -159,7 +160,7 @@ class OrderController extends Controller
                 return $pdf;
             })
             ->addIndexColumn()
-            ->rawColumns(['order_number', 'awb_code', 'customer', 'payment_status', 'shiprocket_status', 'address', 'total_amount', 'order_products', 'created_at', 'shiprocket', 'invoice', 'status'])
+            ->rawColumns(['order_number', 'tracking_number', 'customer', 'payment_status', 'shiprocket_status', 'address', 'total_amount', 'order_products', 'created_at', 'shiprocket', 'invoice', 'status'])
             ->setRowId('id')
             ->make(true);
     }
@@ -193,6 +194,41 @@ class OrderController extends Controller
     public function update(Request $request, $id)
     {
         //
+    }
+
+    public function updateTracking(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'status' => 'required|string',
+            'estimated_delivery_date' => 'nullable|date'
+        ]);
+
+        $order = Order::findOrFail($request->order_id);
+
+        $estimatedDate = $request->estimated_delivery_date;
+        if ($request->status === 'Shipped' && empty($estimatedDate)) {
+            $estimatedDate = Carbon::now()->addDays(7)->format('Y-m-d');
+        }
+
+        $order->update([
+            'status' => $request->status,
+            'courier_name' => $request->courier_name,
+            'tracking_number' => $request->tracking_number,
+            'tracking_url' => $request->tracking_url,
+            'estimated_delivery_date' => $estimatedDate,
+        ]);
+
+        \App\Models\OrderTrackingHistory::create([
+            'order_id' => $order->id,
+            'status' => $request->status,
+            'note' => $request->note,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Order tracking updated successfully.',
+        ]);
     }
 
     // Delete an order

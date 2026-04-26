@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 @section('title')
-    Blog | Bamboo Street
+    Blog | Itsroop
 @endsection
 @section('content')
     <!-- page-title -->

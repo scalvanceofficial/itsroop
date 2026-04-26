@@ -17,7 +17,7 @@
                         <h5 class="fw-bold mb-1 text-primary">{{ $user->full_name }}</h5>
                         <p class="text-muted mb-2"><i class="ti ti-mail me-2"></i> {{ $user->email }}</p>
                         <p class="text-muted"><i class="ti ti-phone me-2"></i> {{ $user->mobile }}</p>
-                        <b> {{ toIndianCurrency($total_order_amount) }}</b>
+                        <b> {{ toCurrency($total_order_amount) }}</b>
 
                         <hr class="my-3">
                         <div class="d-flex justify-content-center gap-3">

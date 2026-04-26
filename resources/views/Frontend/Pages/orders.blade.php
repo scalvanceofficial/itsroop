@@ -59,7 +59,7 @@
                                                         {{ toIndianDate($order->created_at->addDays(10)) }}
                                                     </td>
                                                     <td>
-                                                        {{ toIndianCurrency($order->total_amount) }}
+                                                        {{ toCurrency($order->total_amount) }}
                                                     </td>
                                                     <td>
                                                         <a href="{{ route('frontend.orders.details', $order->route_key) }}"

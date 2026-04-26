@@ -14,36 +14,35 @@ class AuthController extends Controller
     public function signIn(Request $request)
     {
         $request->validate([
-            'mobile' => 'required|numeric|digits:10',
+            'email' => 'required|email',
         ]);
 
-        $is_production = env('APP_ENV') === 'production';
-        $otp = $is_production ? rand(1000, 9999) : 1234;
-
+        $otp = rand(100000, 999999);
         $user = User::updateOrCreate(
-            ['mobile' => $request->mobile],
-            ['password' => Hash::make($otp)]
+            ['email' => $request->email],
+            [
+                'otp' => $otp,
+                'otp_expires_at' => now()->addMinutes(5),
+            ]
         );
 
-        if ($is_production) {
-            $message_id = $user->wasRecentlyCreated ? 184302 : 184301;
-            send_sms($user->mobile, $otp, $message_id);
-        }
+        \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OtpMail($otp));
 
         return response()->json([
             'status' => 'success',
-            'message' => 'OTP sent successfully.',
-            'mobile' => $user->mobile
-        ], 201);
+            'message' => 'OTP sent to your email successfully.',
+            'email' => $user->email
+        ], 200);
     }
 
     public function verifyOtp(Request $request)
     {
         $request->validate([
-            'otp' => 'required|numeric|digits:4'
+            'email' => 'required|email',
+            'otp' => 'required|numeric|digits:6'
         ]);
 
-        $user = User::where('mobile', $request->mobile)->first();
+        $user = User::where('email', $request->email)->first();
 
         if (!$user) {
             return response()->json([
@@ -52,7 +51,9 @@ class AuthController extends Controller
             ], 400);
         }
 
-        if (Hash::check($request->otp, $user->password)) {
+        if ($user->otp == $request->otp && now()->lt($user->otp_expires_at)) {
+            // Clear OTP after successful verification
+            $user->update(['otp' => null, 'otp_expires_at' => null]);
 
             if ($user->is_registered == 1) {
                 Auth::login($user);
@@ -68,7 +69,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'error',
-            'message' => 'Invalid OTP'
+            'message' => 'Invalid or expired OTP'
         ], 400);
     }
 
