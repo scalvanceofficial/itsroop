@@ -16,6 +16,8 @@ use App\Services\EmailService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\ShiprocketService;
 use App\Http\Controllers\Controller;
+use App\Models\ReturnProduct;
+use App\Models\ReturnStatusLog;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -291,6 +293,82 @@ class OrderController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Order cancelled successfully',
+        ]);
+    }
+
+    public function returnOrder(Request $request, Order $order)
+    {
+        $request->validate([
+            'order_product_id' => 'required|exists:order_products,id',
+            'return_quantity' => 'required|integer|min:1',
+            'remark' => 'nullable|string'
+        ]);
+
+        $order_product_id = $request->order_product_id;
+        $return_quantity = $request->return_quantity;
+
+        // Check if order is delivered and within 7 days
+        if ($order->status !== 'Delivered') {
+            return response()->json(['status' => 'error', 'message' => 'Only delivered orders can be returned.'], 400);
+        }
+
+        if ($order->updated_at->diffInDays() > 7) {
+            return response()->json(['status' => 'error', 'message' => 'Return period has expired (7 days).'], 400);
+        }
+
+        $orderProduct = OrderProduct::where('order_id', $order->id)
+            ->where('id', $order_product_id)
+            ->first();
+
+        if (!$orderProduct) {
+            return response()->json(['status' => 'error', 'message' => 'Product not found in this order.'], 400);
+        }
+
+        $alreadyReturned = ReturnProduct::where('order_product_id', $order_product_id)->sum('return_quantity');
+        if (($alreadyReturned + $return_quantity) > $orderProduct->quantity) {
+            return response()->json(['status' => 'error', 'message' => 'Return quantity exceeds purchased quantity.'], 400);
+        }
+
+        $fixedPrefix = 'R543210+';
+        $last_return_number = ReturnProduct::whereNotNull('return_number')
+            ->where('return_number', 'like', $fixedPrefix . '%')
+            ->orderBy('id', 'desc')
+            ->value('return_number');
+
+        $last_number = 0;
+        if ($last_return_number && preg_match('/\+(\d+)$/', $last_return_number, $matches)) {
+            $last_number = (int) $matches[1];
+        }
+        $next_number = $fixedPrefix . str_pad($last_number + 1, 4, '0', STR_PAD_LEFT);
+
+        $return_product = ReturnProduct::create([
+            'order_id' => $order->id,
+            'order_product_id' => $order_product_id,
+            'return_quantity' => $return_quantity,
+            'remark' => $request->remark,
+            'return_number' => $next_number,
+            'status' => 'RETURN_IN_PROGRESS'
+        ]);
+
+        ReturnStatusLog::create([
+            'return_product_id' => $return_product->id,
+            'status' => 'RETURN_IN_PROGRESS',
+        ]);
+
+        // Email to customer
+        $emailData = [
+            'subject' => 'Return Initiated - #' . $order->order_number,
+            'order_number' => $order->order_number,
+            'customer_name' => $order->user->full_name,
+            'product_name' => $orderProduct->product->name,
+            'quantity' => $return_quantity,
+            'remark' => $request->remark,
+        ];
+        EmailService::sendEmail($order->user->email, 'emails.order-return', $emailData);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Return request submitted successfully.'
         ]);
     }
 }

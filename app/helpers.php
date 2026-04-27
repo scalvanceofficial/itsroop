@@ -98,6 +98,10 @@ function toCurrency($amountGbp, $selected = null): string
 
     $converted = (float) $amountGbp * $currency->exchange_rate;
 
+    if ($currency->code === 'INR') {
+        return toIndianCurrency($converted);
+    }
+
     return $currency->symbol . number_format($converted, 2);
 }
 
@@ -130,6 +134,10 @@ function formatCurrency($amount, $currencyCode): string
     $currency = \Illuminate\Support\Facades\Cache::remember('currency_' . $currencyCode, 3600, function () use ($currencyCode) {
         return \App\Models\Currency::where('code', $currencyCode)->first();
     });
+
+    if ($currencyCode === 'INR') {
+        return toIndianCurrency($amount);
+    }
 
     $symbol = $currency ? $currency->symbol : '£';
     return $symbol . number_format($amount, 2);

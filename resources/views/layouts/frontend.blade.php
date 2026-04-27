@@ -500,79 +500,45 @@
                                 </div>
                             </div>
                             <div class="col-xl-3 col-md-6 col-12">
-                                <div class="footer-newsletter footer-col-block">
-                                    <div class="footer-heading footer-heading-desktop">
+                                <div class="footer-newsletter footer-col-block">                                    <div class="footer-heading footer-heading-desktop">
                                         <h6 class="fw-5">Request Your Product</h6>
                                     </div>
                                     <div class="footer-heading footer-heading-moblie">
                                         <h6 class="fw-5">Request Your Product</h6>
                                     </div>
                                     <div class="tf-collapse-content">
-                                        <div class="footer-menu_item">Looking for a specific product? Let us know and we'll do our best to get it for you!</div>
-                                        <div class="sib-form">
-                                            <div id="sib-form-container" class="sib-form-container">
-                                                <div id="sib-container"
-                                                    class="sib-container--large sib-container--vertical">
-                                                    <form method="POST" action="/subscribe-enquiry"
-                                                        id="subscribeForm" enctype="multipart/form-data">
-                                                        @csrf
-                                                        <div class="sib-input sib-form-block mb-3">
-                                                            <div class="form__entry entry_block">
-                                                                <div class="entry__field">
-                                                                    <input class="input radius-60" type="text"
-                                                                        id="email_req" class="form-control"
-                                                                        name="email" autocomplete="off"
-                                                                        placeholder="Your Email"
-                                                                        data-required="true" />
-                                                                    <div class="field_error" id="email-error"
-                                                                        style="color:#ff0000"></div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="sib-form-block mb-3">
-                                                            <div class="sib-input sib-form-block">
-                                                                <textarea class="input radius-10 w-100" name="product_request" rows="3"
-                                                                    placeholder="Request Your Product (Name/Details)"
-                                                                    style="padding: 10px 20px; border: 1px solid #ddd;" required></textarea>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="sib-form-block mb-3">
-                                                            <div class="sib-input sib-form-block">
-                                                                <label class="form-label" style="font-size: 0.9em; color: #666;">Upload Product Image (Optional)</label>
-                                                                <input type="file" name="product_image" class="form-control radius-60" accept="image/*" style="padding: 10px 20px;">
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="sib-form-block mb-3">
-                                                            <div class="sib-optin sib-form-block">
-                                                                <div class="form__entry entry_mcq">
-                                                                    <label>
-                                                                        <input type="checkbox" name="OPT_IN"
-                                                                            id="OPT_IN" value="1" />
-                                                                        <span
-                                                                            class="checkbox checkbox_tick_positive"></span>
-                                                                        I agree to receive updates
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="sib-form-block button-submit text-center">
-                                                            <button type="submit" id="started"
-                                                                class="sib-form-block__button sib-form-block__button-with-loader tf-btn btn-sm radius-60 btn-fill btn-icon animate-hover-btn w-100 justify-content-center">
-                                                                Request Your Product <i
-                                                                    class="icon icon-arrow1-top-left"></i>
-                                                            </button>
-                                                            <div id="form_loader" style="display:none;">Loading...
-                                                            </div>
-                                                        </div>
-                                                    </form>
-
-                                                </div>
+                                        <div class="footer-menu_item mb-3">Looking for a specific product? Let us know and we'll do our best to get it for you!</div>
+                                        
+                                        <form method="POST" action="/subscribe-enquiry" id="subscribeForm" enctype="multipart/form-data" class="product-request-form">
+                                            @csrf
+                                            <div class="mb-3">
+                                                <input type="email" name="email" class="form-control" 
+                                                    style="height: 50px; border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; padding: 10px 20px;" 
+                                                    placeholder="Your Email Address" required>
                                             </div>
-                                        </div>
+
+                                            <div class="mb-3">
+                                                <textarea name="product_request" class="form-control" rows="3" 
+                                                    style="border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; padding: 15px 20px; resize: none;" 
+                                                    placeholder="Request Details (Name, Brand, etc.)" required></textarea>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label mb-1" style="font-size: 13px; color: #777; font-weight: 500;">Product Image (Optional)</label>
+                                                <input type="file" name="product_image" class="form-control" accept="image/*" 
+                                                    style="border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; padding: 8px 15px;">
+                                            </div>
+
+                                            <div class="mb-3 d-flex align-items-center gap-2">
+                                                <input type="checkbox" name="OPT_IN" id="OPT_IN" value="1" style="width: 16px; height: 16px; cursor: pointer;">
+                                                <label for="OPT_IN" style="font-size: 13px; color: #777; margin: 0; cursor: pointer;">I agree to receive updates</label>
+                                            </div>
+
+                                            <button type="submit" class="tf-btn btn-fill w-100 justify-content-center animate-hover-btn" 
+                                                style="height: 50px; border-radius: 10px; font-weight: 600; font-size: 15px;">
+                                                Send Request <i class="icon icon-arrow1-top-left ms-2"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -682,7 +648,7 @@
                         <div id="dropdown-menu-shop" class="collapse">
                             <ul class="sub-nav-menu">
                                 @foreach($menu_categories ?? [] as $category)
-                                    <li><a href="{{ route('frontend.products', ['category_slug' => $category->slug]) }}" class="sub-nav-link text-capitalize">{{ $category->name }}</a></li>
+                                    <li><a href="{{ route('frontend.products', ['category_slug' => $category->slug ?? '']) }}" class="sub-nav-link text-capitalize">{{ $category->name ?? '' }}</a></li>
                                 @endforeach
                             </ul>
                         </div>
@@ -696,7 +662,7 @@
                         <div id="dropdown-menu-products" class="collapse">
                             <ul class="sub-nav-menu">
                                 @foreach($menu_subcategories ?? [] as $subCategory)
-                                    <li><a href="{{ route('frontend.products', ['category_slug' => $subCategory->category->slug ?? 'all', 'sub_category' => $subCategory->name]) }}" class="sub-nav-link text-capitalize">{{ $subCategory->name }}</a></li>
+                                    <li><a href="{{ route('frontend.products', ['category_slug' => optional($subCategory->category)->slug ?? 'all', 'sub_category' => $subCategory->name ?? '']) }}" class="sub-nav-link text-capitalize">{{ $subCategory->name ?? '' }}</a></li>
                                 @endforeach
                             </ul>
                         </div>

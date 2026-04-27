@@ -14,6 +14,7 @@
         "laravel/framework": "^9.19",
         "laravel/passport": "^12.0",
         "laravel/sanctum": "^3.0",
+        "laravel/tinker": "^3.0",
         "maatwebsite/excel": "^3.1",
         "razorpay/razorpay": "^2.9",
         "spatie/laravel-activitylog": "^4.9",
@@ -73,6 +74,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true
+        },
+        "audit": {
         }
     },
     "minimum-stability": "stable",

@@ -57,7 +57,9 @@ class OrderController extends Controller
             })
             ->editColumn('shiprocket_status', function ($order) {
                 $displayStatus = $order->status ? $order->status : ($order->shiprocket_status ?: 'NEW');
-                return '<a href="#" class="text-primary fw-bold tracking-update-order-btn" data-id="' . $order->id . '" data-status="' . $order->status . '" data-courier="' . $order->courier_name . '" data-tracking="' . $order->tracking_number . '" data-url="' . $order->tracking_url . '" data-date="' . $order->estimated_delivery_date . '">' . strtoupper($displayStatus) . '</a>';
+                $hasReturn = ReturnProduct::where('order_id', $order->id)->exists();
+                $returnBadge = $hasReturn ? ' <span class="badge bg-danger fs-1">RETURNED</span>' : '';
+                return '<a href="#" class="text-primary fw-bold tracking-update-order-btn" data-id="' . $order->id . '" data-status="' . $order->status . '" data-courier="' . $order->courier_name . '" data-tracking="' . $order->tracking_number . '" data-url="' . $order->tracking_url . '" data-date="' . $order->estimated_delivery_date . '">' . strtoupper($displayStatus) . '</a>' . $returnBadge;
             })
             ->editColumn('address', function ($order) {
                 return $order->address->address_line_1 . ',' . $order->address->address_line_2 . ',' . $order->address->city . ',' . $order->address->pincode;
@@ -91,7 +93,6 @@ class OrderController extends Controller
                 foreach ($order->products as $order_product) {
                     $returnedQty = ReturnProduct::where('order_id', $order->id)
                         ->where('order_product_id', $order_product->id)
-                        ->where('status', 'REFUND_COMPLETED')
                         ->sum('return_quantity');
 
                     $product = $order_product->product;

@@ -16,6 +16,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/orders', [OrderController::class, 'orders'])->name('orders');
         Route::get('/orders/{order}', [OrderController::class, 'orderDetails'])->name('orders.details');
         Route::post('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+        Route::post('/orders/{order}/return', [OrderController::class, 'returnOrder'])->name('orders.return');
         Route::get('orders/{order}/pdf', [OrderController::class, 'pdf'])->name('orders.pdf.download');
         Route::get('/checkout', [OrderController::class, 'checkout'])->name('orders.checkout');
         Route::post('/stripe/initiate', [OrderController::class, 'initiatePayment'])->name('orders.stripe-initiate');

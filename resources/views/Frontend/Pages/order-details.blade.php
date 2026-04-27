@@ -251,6 +251,17 @@ Orders | Itsroop
                                 </div>
                             @endif
 
+                            @if ($order->status == 'Delivered' && $order->updated_at->diffInDays() <= 7 && (!$returned_product || $returned_product->return_quantity < $product_quantity))
+                                <button class="btn btn-outline-warning btn-sm mt-2 return-btn" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#returnProductModal"
+                                        data-id="{{ $order_product->id }}" 
+                                        data-max="{{ $product_quantity - ($returned_product->return_quantity ?? 0) }}"
+                                        data-name="{{ $order_product->product->name }}">
+                                    Return Product
+                                </button>
+                            @endif
+
                         </div>
                     </div>
                 </div>
@@ -268,14 +279,16 @@ Orders | Itsroop
     <div class="card shadow-sm border-0">
         <div class="card-body">
 
-            @if ($order->created_at->diffInHours() < 24 && $order->shiprocket_status == 'NEW' && $order->shiprocket_status != 'Cancelled')
+            @if ($order->status != 'Delivered' && $order->status != 'Cancelled' && $order->created_at->diffInHours() < 24 && $order->shiprocket_status == 'NEW')
                 <div class="alert alert-info">
                     <h6>Cancel Available</h6>
                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                         Cancel Order
                     </button>
                 </div>
-            @elseif($order->shiprocket_status == 'Cancelled')
+            @elseif($order->status == 'Delivered')
+                <div class="alert alert-success">Order Delivered</div>
+            @elseif($order->status == 'Cancelled' || $order->shiprocket_status == 'Cancelled')
                 <div class="alert alert-warning">Order Cancelled</div>
             @else
                 <div class="alert alert-secondary">Cancellation not available</div>
@@ -287,17 +300,51 @@ Orders | Itsroop
 </div>
 </section>
 
-<!-- Modal (UNCHANGED) -->
+<!-- Return Modal -->
+<div class="modal fade" id="returnProductModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{{ route('frontend.orders.return', $order->route_key) }}" method="POST" id="returnOrderForm">
+                @csrf
+                <input type="hidden" name="order_product_id" id="return_order_product_id">
+                <div class="modal-header">
+                    <h5 class="modal-title">Return <span id="return_product_name"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Quantity to Return</label>
+                        <input type="number" name="return_quantity" id="return_qty_input" class="form-control" min="1" value="1">
+                    </div>
+                    <div class="mb-3">
+                        <label>Reason for Return</label>
+                        <textarea name="remark" class="form-control" placeholder="Please describe the reason..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-warning">Submit Return</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Order Modal -->
 <div class="modal fade" id="cancelOrderModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form action="{{ route('frontend.orders.cancel', $order->route_key) }}" method="POST" id="cancelOrderForm">
                 @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Cancel Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
-                    <textarea name="cancellation_reason" class="form-control"></textarea>
+                    <label>Reason for Cancellation</label>
+                    <textarea name="cancellation_reason" class="form-control" required></textarea>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger">Cancel</button>
+                    <button class="btn btn-danger">Cancel Order</button>
                 </div>
             </form>
         </div>
@@ -308,12 +355,29 @@ Orders | Itsroop
 $(document).ready(function() {
     $('#cancelOrderForm').on('submit', function(e) {
         e.preventDefault();
-
         $.post($(this).attr('action'), $(this).serialize(), function(response){
             if(response.status == 'success'){
                 toastr.success(response.message);
                 location.reload();
             }
+        });
+    });
+
+    $('.return-btn').on('click', function() {
+        $('#return_order_product_id').val($(this).data('id'));
+        $('#return_product_name').text($(this).data('name'));
+        $('#return_qty_input').attr('max', $(this).data('max'));
+    });
+
+    $('#returnOrderForm').on('submit', function(e) {
+        e.preventDefault();
+        $.post($(this).attr('action'), $(this).serialize(), function(response){
+            if(response.status == 'success'){
+                toastr.success(response.message);
+                location.reload();
+            }
+        }).fail(function(xhr){
+            toastr.error(xhr.responseJSON.message || 'Something went wrong.');
         });
     });
 });

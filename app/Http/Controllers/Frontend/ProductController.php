@@ -356,6 +356,8 @@ class ProductController extends Controller
             'final_price' => $finalAmount,
             'discount_percentage' => $discountPercentage,
             'discount_amount' => $discountAmount,
+            'formatted_discount_amount' => formatCurrency($discountAmount, $currencyCode),
+            'formatted_final_price' => formatCurrency($finalAmount, $currencyCode),
         ]);
     }
 

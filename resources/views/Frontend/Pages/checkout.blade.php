@@ -235,7 +235,7 @@
                     totalSellingPrice: totalAmount
                 }, function(res) {
                     if (res.status === 'success') {
-                        $('#couponMessage').text('Coupon applied! ₹' + res.discount_amount +
+                        $('#couponMessage').text('Coupon applied! ' + res.formatted_discount_amount +
                             ' off.');
 
                         $('#appliedCouponId').val(res.coupon_code_id);
